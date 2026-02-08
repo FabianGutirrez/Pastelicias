@@ -17,11 +17,12 @@ const emptyProduct: Omit<Product, 'id'> = {
     description: '',
     longDescription: '',
     price: 0,
-    imageUrl: 'https://picsum.photos/400/300',
+    imageUrl: 'https://placehold.co/400x300?text=Sin+Imagen',
     inStock: true,
     category: 'dulce',
     isFeatured: false,
     priceTiers: [{ quantity: 0, price: 0, label: '' }],
+    availableCustomizations: [],
 };
 
 const AdminPage: React.FC<AdminPageProps> = ({ 
@@ -53,6 +54,25 @@ const AdminPage: React.FC<AdminPageProps> = ({
         } else {
             setFormState(prev => ({ ...prev, [name]: value }));
         }
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormState(prev => ({ ...prev, imageUrl: reader.result as string }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleCustomizationToggle = (option: 'flavors' | 'fillings' | 'colors') => {
+        const currentOptions = formState.availableCustomizations || [];
+        const newOptions = currentOptions.includes(option)
+            ? currentOptions.filter(item => item !== option)
+            : [...currentOptions, option];
+        setFormState(prev => ({ ...prev, availableCustomizations: newOptions }));
     };
 
     const handleTierChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,23 +132,34 @@ const AdminPage: React.FC<AdminPageProps> = ({
 
     return (
         <section id="admin" className="space-y-12">
-            <h2 className="text-3xl font-serif font-bold text-center text-dark-choco">Panel de Administración</h2>
+            <h2 className="text-3xl font-serif font-bold text-center text-cocoa-brown">Panel de Administración</h2>
             
             {/* Product Form Modal */}
             {editingProduct && (
-                <div className="fixed inset-0 bg-black/50 z-50 p-4 flex items-center justify-center" onClick={() => setEditingProduct(null)}>
-                    <div className="bg-cream rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 bg-black/60 z-50 p-4 flex items-center justify-center animate-fade-in" onClick={() => setEditingProduct(null)}>
+                    <div className="bg-cream rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-scale-in" onClick={e => e.stopPropagation()}>
                         <form onSubmit={handleSubmit} className="p-8 space-y-4">
-                            <h3 className="text-2xl font-serif font-bold text-dark-choco">{'id' in editingProduct ? 'Editar' : 'Añadir'} Producto</h3>
+                            <h3 className="text-2xl font-serif font-bold text-cocoa-brown">{'id' in editingProduct ? 'Editar' : 'Añadir'} Producto</h3>
                             {/* Form fields */}
                             <AdminInput label="Nombre del Producto" name="name" value={formState.name} onChange={handleFormChange} />
                             <AdminTextarea label="Descripción Corta" name="description" value={formState.description} onChange={handleFormChange} />
                             <AdminTextarea label="Descripción Larga" name="longDescription" value={formState.longDescription} onChange={handleFormChange} rows={4}/>
-                            <AdminInput label="URL de la Imagen" name="imageUrl" value={formState.imageUrl} onChange={handleFormChange} />
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-cocoa-brown mb-1">Imagen del Producto</label>
+                                <div className="flex items-center gap-4">
+                                    <img src={formState.imageUrl} alt="Previsualización" className="w-24 h-24 object-cover rounded-md bg-gray-200"/>
+                                    <input id="imageUpload" type="file" accept="image/*" onChange={handleImageChange} className="hidden"/>
+                                    <label htmlFor="imageUpload" className="cursor-pointer bg-white text-cocoa-brown font-semibold py-2 px-4 border border-blush-pink rounded-lg hover:bg-blush-pink/50">
+                                        Cambiar Imagen
+                                    </label>
+                                </div>
+                            </div>
+
                             <AdminInput label="Precio Base (Desde)" name="price" type="number" value={formState.price} onChange={handleFormChange} />
                             
                             <div>
-                                <label htmlFor="category" className="block text-sm font-medium text-dark-choco mb-1">Categoría</label>
+                                <label htmlFor="category" className="block text-sm font-medium text-cocoa-brown mb-1">Categoría</label>
                                 <select id="category" name="category" value={formState.category} onChange={handleFormChange} className="admin-input">
                                     <option value="dulce">Dulce</option>
                                     <option value="salado">Salado</option>
@@ -136,10 +167,19 @@ const AdminPage: React.FC<AdminPageProps> = ({
                                 </select>
                             </div>
 
+                             <div>
+                                <label className="block text-sm font-medium text-cocoa-brown mb-2">Opciones de Personalización Disponibles</label>
+                                <div className="flex gap-4">
+                                   <AdminCheckbox label="Sabores" name="flavors" checked={formState.availableCustomizations?.includes('flavors') || false} onChange={() => handleCustomizationToggle('flavors')} />
+                                   <AdminCheckbox label="Rellenos" name="fillings" checked={formState.availableCustomizations?.includes('fillings') || false} onChange={() => handleCustomizationToggle('fillings')} />
+                                   <AdminCheckbox label="Colores" name="colors" checked={formState.availableCustomizations?.includes('colors') || false} onChange={() => handleCustomizationToggle('colors')} />
+                                </div>
+                            </div>
+
                             <div>
-                                <label className="block text-sm font-medium text-dark-choco mb-2">Paquetes de Precios</label>
+                                <label className="block text-sm font-medium text-cocoa-brown mb-2">Paquetes de Precios</label>
                                 {formState.priceTiers.map((tier, index) => (
-                                <div key={index} className="flex items-center gap-2 mb-2 p-2 border border-peach rounded-md">
+                                <div key={index} className="flex items-center gap-2 mb-2 p-2 border border-blush-pink rounded-md">
                                     <input type="text" name="label" placeholder="Etiqueta (ej. 30 unidades)" value={tier.label} onChange={e => handleTierChange(index, e)} className="admin-input flex-1"/>
                                     <input type="number" name="quantity" placeholder="Cant." value={tier.quantity} onChange={e => handleTierChange(index, e)} className="admin-input w-20"/>
                                     <input type="number" name="price" placeholder="Precio" value={tier.price} onChange={e => handleTierChange(index, e)} className="admin-input w-24"/>
@@ -155,8 +195,8 @@ const AdminPage: React.FC<AdminPageProps> = ({
                             </div>
 
                             <div className="flex justify-end gap-4 pt-4">
-                                <button type="button" onClick={() => setEditingProduct(null)} className="py-2 px-4 rounded-md bg-gray-300 hover:bg-gray-400">Cancelar</button>
-                                <button type="submit" className="py-2 px-6 rounded-md bg-brown-sugar text-cream hover:bg-dark-choco">Guardar</button>
+                                <button type="button" onClick={() => setEditingProduct(null)} className="py-2 px-4 rounded-lg bg-gray-300 hover:bg-gray-400">Cancelar</button>
+                                <button type="submit" className="py-2 px-6 rounded-lg bg-rose-gold text-cocoa-brown hover:bg-muted-mauve hover:text-white">Guardar</button>
                             </div>
                         </form>
                     </div>
@@ -166,8 +206,8 @@ const AdminPage: React.FC<AdminPageProps> = ({
             {/* Product Management */}
             <div className="bg-white p-6 rounded-lg shadow-lg">
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-2xl font-serif font-bold text-dark-choco">Gestionar Productos</h3>
-                    <button onClick={() => setEditingProduct(emptyProduct)} className="bg-brown-sugar text-cream font-bold py-2 px-4 rounded-md hover:bg-dark-choco">Añadir Nuevo Producto</button>
+                    <h3 className="text-2xl font-serif font-bold text-cocoa-brown">Gestionar Productos</h3>
+                    <button onClick={() => setEditingProduct(emptyProduct)} className="bg-rose-gold text-cocoa-brown font-bold py-2 px-4 rounded-lg hover:bg-muted-mauve hover:text-white">Añadir Nuevo Producto</button>
                 </div>
                 <div className="space-y-2">
                     {products.map(product => (
@@ -184,7 +224,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
 
             {/* Customization Options Management */}
             <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-2xl font-serif font-bold text-dark-choco mb-4">Gestionar Opciones de Personalización</h3>
+                <h3 className="text-2xl font-serif font-bold text-cocoa-brown mb-4">Gestionar Opciones de Personalización</h3>
                 <div className="grid md:grid-cols-3 gap-6">
                     <OptionManager title="Sabores" category="flavors" options={customizationOptions.flavors} newOptionValue={newOptions.flavors} onNewOptionChange={e => setNewOptions(p => ({...p, flavors: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
                     <OptionManager title="Rellenos" category="fillings" options={customizationOptions.fillings} newOptionValue={newOptions.fillings} onNewOptionChange={e => setNewOptions(p => ({...p, fillings: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
@@ -198,20 +238,20 @@ const AdminPage: React.FC<AdminPageProps> = ({
 // Helper components for Admin form
 const AdminInput: React.FC<any> = ({ label, ...props }) => (
     <div>
-        <label htmlFor={props.name} className="block text-sm font-medium text-dark-choco mb-1">{label}</label>
+        <label htmlFor={props.name} className="block text-sm font-medium text-cocoa-brown mb-1">{label}</label>
         <input {...props} id={props.name} className="admin-input"/>
     </div>
 );
 const AdminTextarea: React.FC<any> = ({ label, ...props }) => (
     <div>
-        <label htmlFor={props.name} className="block text-sm font-medium text-dark-choco mb-1">{label}</label>
+        <label htmlFor={props.name} className="block text-sm font-medium text-cocoa-brown mb-1">{label}</label>
         <textarea {...props} id={props.name} className="admin-input" rows={props.rows || 2}></textarea>
     </div>
 );
 const AdminCheckbox: React.FC<any> = ({ label, ...props }) => (
     <label className="flex items-center gap-2">
-        <input type="checkbox" {...props} className="h-4 w-4 rounded border-peach text-brown-sugar focus:ring-brown-sugar"/>
-        <span className="text-sm font-medium text-dark-choco">{label}</span>
+        <input type="checkbox" {...props} className="h-4 w-4 rounded border-blush-pink text-rose-gold focus:ring-rose-gold"/>
+        <span className="text-sm font-medium text-cocoa-brown">{label}</span>
     </label>
 );
 const OptionManager: React.FC<{title: string, category: keyof CustomizationCollection, options: string[], newOptionValue: string, onNewOptionChange: React.ChangeEventHandler<HTMLInputElement>, onAdd: Function, onDelete: Function}> = 
@@ -232,28 +272,5 @@ const OptionManager: React.FC<{title: string, category: keyof CustomizationColle
         </div>
     </div>
 );
-
-// This is a hacky way to inject styles in this environment. 
-// For a production build, this should be moved to a separate CSS file.
-const styleExists = document.getElementById('admin-styles');
-if (!styleExists) {
-    const styleElement = document.createElement('style');
-    styleElement.id = 'admin-styles';
-    styleElement.textContent = `
-        .admin-input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #FFDAB9; /* peach */
-            border-radius: 6px;
-            background-color: #FFF;
-        }
-        .admin-input:focus {
-            outline: none;
-            border-color: #B08968; /* brown-sugar */
-            box-shadow: 0 0 0 2px rgba(176, 137, 104, 0.2);
-        }
-    `;
-    document.head.append(styleElement);
-}
 
 export default AdminPage;

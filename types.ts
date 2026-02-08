@@ -5,7 +5,7 @@ export interface Product {
   description: string;
   longDescription: string;
   price: number; // Represents the starting price
-  imageUrl: string;
+  imageUrl: string; // Can be a web URL or a local base64 data URI
   inStock: boolean;
   category: 'dulce' | 'salado' | 'promocion';
   isFeatured?: boolean;
@@ -14,6 +14,7 @@ export interface Product {
     price: number;
     label: string;
   }[];
+  availableCustomizations?: ('flavors' | 'fillings' | 'colors')[];
 }
 
 export interface CustomizationOptions {

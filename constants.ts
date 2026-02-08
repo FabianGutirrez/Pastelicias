@@ -16,7 +16,8 @@ export const INITIAL_PRODUCTS: Product[] = [
       { quantity: 30, price: 7500, label: '30 unidades' },
       { quantity: 50, price: 10000, label: '50 unidades' },
       { quantity: 100, price: 18000, label: '100 unidades' },
-    ]
+    ],
+    availableCustomizations: ['colors']
   },
   {
     id: 2,
@@ -32,7 +33,8 @@ export const INITIAL_PRODUCTS: Product[] = [
       { quantity: 25, price: 7000, label: '25 unidades' },
       { quantity: 50, price: 12000, label: '50 unidades' },
       { quantity: 100, price: 18000, label: '100 unidades' },
-    ]
+    ],
+    availableCustomizations: ['colors']
   },
   {
     id: 3,
@@ -48,7 +50,8 @@ export const INITIAL_PRODUCTS: Product[] = [
       { quantity: 24, price: 7000, label: '24 cakepops' },
       { quantity: 48, price: 13000, label: '48 cakepops' },
       { quantity: 100, price: 22000, label: '100 cakepops' },
-    ]
+    ],
+    availableCustomizations: ['flavors', 'colors']
   },
   {
     id: 4,
@@ -63,7 +66,8 @@ export const INITIAL_PRODUCTS: Product[] = [
       { quantity: 30, price: 7500, label: '30 unidades' },
       { quantity: 60, price: 14000, label: '60 unidades' },
       { quantity: 100, price: 21000, label: '100 unidades' },
-    ]
+    ],
+    availableCustomizations: ['colors']
   },
   {
     id: 5,
@@ -79,7 +83,8 @@ export const INITIAL_PRODUCTS: Product[] = [
       { quantity: 40, price: 12000, label: '40 unidades' },
       { quantity: 80, price: 20000, label: '80 unidades' },
       { quantity: 100, price: 23000, label: '100 unidades' },
-    ]
+    ],
+    availableCustomizations: []
   },
   {
     id: 6,
@@ -94,7 +99,8 @@ export const INITIAL_PRODUCTS: Product[] = [
         { quantity: 40, price: 12000, label: '40 unidades' },
         { quantity: 80, price: 20000, label: '80 unidades' },
         { quantity: 100, price: 23000, label: '100 unidades' },
-    ]
+    ],
+    availableCustomizations: []
   },
   {
     id: 7,
@@ -109,7 +115,8 @@ export const INITIAL_PRODUCTS: Product[] = [
         { quantity: 25, price: 7000, label: '25 unidades' },
         { quantity: 50, price: 14000, label: '50 unidades' },
         { quantity: 100, price: 25000, label: '100 unidades' },
-    ]
+    ],
+    availableCustomizations: ['fillings']
   },
   {
     id: 8,
@@ -123,7 +130,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     category: 'promocion',
     priceTiers: [
       { quantity: 120, price: 22000, label: 'Total 120 unidades' }
-    ]
+    ],
+    availableCustomizations: []
   },
   {
     id: 9,
@@ -137,7 +145,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     category: 'promocion',
     priceTiers: [
       { quantity: 240, price: 40000, label: 'Total 240 unidades' }
-    ]
+    ],
+    availableCustomizations: []
   },
   {
     id: 10,
@@ -151,7 +160,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     category: 'promocion',
     priceTiers: [
         { quantity: 100, price: 30000, label: '100 unidades a elección' }
-    ]
+    ],
+    availableCustomizations: []
   },
   {
     id: 11,
@@ -165,7 +175,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     priceTiers: [
         { quantity: 50, price: 17000, label: '50 unidades' },
         { quantity: 100, price: 30000, label: '100 unidades' }
-    ]
+    ],
+    availableCustomizations: []
   },
   {
     id: 12,
@@ -179,7 +190,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     priceTiers: [
         { quantity: 25, price: 17000, label: '25 unidades' },
         { quantity: 50, price: 30000, label: '50 unidades' }
-    ]
+    ],
+    availableCustomizations: []
   },
   {
     id: 13,
@@ -194,7 +206,8 @@ export const INITIAL_PRODUCTS: Product[] = [
         { quantity: 25, price: 9500, label: '25 unidades' },
         { quantity: 50, price: 17000, label: '50 unidades' },
         { quantity: 100, price: 30000, label: '100 unidades' }
-    ]
+    ],
+    availableCustomizations: []
   },
   {
     id: 14,
@@ -208,7 +221,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     category: 'promocion',
     priceTiers: [
         { quantity: 100, price: 23000, label: 'Caja 50 dulce y 50 salado' }
-    ]
+    ],
+    availableCustomizations: []
   },
   {
     id: 15,
@@ -223,7 +237,8 @@ export const INITIAL_PRODUCTS: Product[] = [
       { quantity: 25, price: 9000, label: '25 unidades' },
       { quantity: 50, price: 14000, label: '50 unidades' },
       { quantity: 100, price: 23000, label: '100 unidades' },
-    ]
+    ],
+    availableCustomizations: []
   },
   {
     id: 16,
@@ -237,7 +252,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     priceTiers: [
       { quantity: 50, price: 16000, label: '50 unidades (2 variedades)' },
       { quantity: 100, price: 28000, label: '100 unidades (3 variedades)' },
-    ]
+    ],
+    availableCustomizations: []
   }
 ];
 
