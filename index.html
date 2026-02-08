@@ -1,15 +1,18 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pastelicias</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <title>Pastelicias - Repostería de Diseño</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <script>
+    // Configuración de Tailwind para reconocer tus colores personalizados
     tailwind.config = {
       theme: {
         extend: {
@@ -28,19 +31,25 @@
       }
     }
   </script>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.4",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
+
+  <style type="text/css">
+    /* Previene desplazamientos horizontales accidentales en móviles */
+    body {
+      overflow-x: hidden;
+      width: 100%;
+    }
+    #root {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
 </head>
-<body class="bg-cream font-sans">
+<body class="bg-cream font-sans text-dark-choco antialiased">
+  
   <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
+
+  <script type="module" src="/src/main.tsx"></script>
+
 </body>
 </html>
