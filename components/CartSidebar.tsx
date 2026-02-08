@@ -66,14 +66,14 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
             ></div>
             <div 
                 ref={sidebarRef}
-                className={`fixed top-0 right-0 h-full w-full max-w-lg bg-cream shadow-2xl transform transition-transform duration-300 z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'} outline-none`}
+                className={`fixed top-0 right-0 h-full w-full max-w-md sm:max-w-lg bg-cream shadow-2xl transform transition-transform duration-300 z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'} outline-none`}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="sidebar-title"
                 tabIndex={-1}
             >
                 <div className="flex flex-col h-full">
-                    <div className="flex justify-between items-center p-6 border-b border-blush-pink">
+                    <div className="flex justify-between items-center p-6 border-b border-blush-pink flex-shrink-0">
                         <h2 id="sidebar-title" className="text-2xl font-serif font-bold text-cocoa-brown">Tu Carrito</h2>
                         <button onClick={onClose} className="text-cocoa-brown hover:text-red-500 transition-colors" aria-label="Cerrar carrito">
                             <XMarkIcon />
@@ -88,63 +88,63 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
                             </button>
                         </div>
                     ) : (
-                        <div className="flex-grow overflow-y-auto p-6 space-y-4">
-                            {cartItems.map(item => (
-                                <CartItemCard key={item.id} item={item} onRemoveItem={onRemoveItem} />
-                            ))}
-                        </div>
-                    )}
-
-                    {cartItems.length > 0 && (
-                        <div className="p-6 border-t border-blush-pink bg-white/50 space-y-4 overflow-y-auto">
-                            {/* Delivery Options */}
-                            <fieldset className="space-y-2">
-                                <legend className="text-lg font-semibold text-cocoa-brown mb-2">Tipo de Entrega</legend>
-                                <RadioOption id="pickup" name="deliveryType" value="pickup" checked={deliveryType === 'pickup'} onChange={() => setDeliveryType('pickup')} label="Retiro en Tienda" cost="$0" />
-                                <RadioOption id="delivery" name="deliveryType" value="delivery" checked={deliveryType === 'delivery'} onChange={() => setDeliveryType('delivery')} label="Entrega a Domicilio" cost={`$${DELIVERY_SHIPPING_COST.toLocaleString('es-CL')}`} />
-                            </fieldset>
-                             
-                            {deliveryType === 'delivery' && (
-                                <input type="text" placeholder="Dirección de Envío" className="w-full px-3 py-2 border border-blush-pink rounded-md focus:ring-rose-gold focus:border-rose-gold" />
-                            )}
-                            
-                            <input type="date" className="w-full px-3 py-2 border border-blush-pink rounded-md focus:ring-rose-gold focus:border-rose-gold" defaultValue={new Date().toISOString().split('T')[0]}/>
-                            <textarea placeholder="Instrucciones Especiales (opcional)" rows={2} className="w-full px-3 py-2 border border-blush-pink rounded-md focus:ring-rose-gold focus:border-rose-gold"></textarea>
-                            
-                            {/* Payment Options */}
-                            <fieldset className="space-y-2">
-                                <legend className="text-lg font-semibold text-cocoa-brown mb-2">Método de Pago</legend>
-                                <RadioOption id="full_payment" name="paymentMethod" value="full" checked={paymentMethod === 'full'} onChange={() => setPaymentMethod('full')} label="Pago Completo Online" />
-                                <RadioOption id="half_payment" name="paymentMethod" value="half" checked={paymentMethod === 'half'} onChange={() => setPaymentMethod('half')} label="Pagar 50% Online y 50% al Recibir" />
-                            </fieldset>
-
-                            <div className="space-y-2 border border-blush-pink p-4 rounded-md">
-                                <h4 className="font-semibold">Detalles de la Tarjeta</h4>
-                                <input type="text" placeholder="Número de Tarjeta" className="w-full px-3 py-2 border border-blush-pink rounded-md" />
-                                <div className="grid grid-cols-3 gap-2">
-                                    <input type="text" placeholder="MM/YY" className="col-span-1 px-3 py-2 border border-blush-pink rounded-md" />
-                                    <input type="text" placeholder="CVV" className="col-span-1 px-3 py-2 border border-blush-pink rounded-md" />
-                                </div>
-                                <input type="text" placeholder="Nombre en la Tarjeta" className="w-full px-3 py-2 border border-blush-pink rounded-md" />
+                        <>
+                            <div className="flex-grow overflow-y-auto p-6 space-y-4">
+                                {cartItems.map(item => (
+                                    <CartItemCard key={item.id} item={item} onRemoveItem={onRemoveItem} />
+                                ))}
                             </div>
 
-                            {/* Totals */}
-                            <div className="space-y-1 text-cocoa-brown">
-                                <div className="flex justify-between"><span>Subtotal:</span><span>${subtotal.toLocaleString('es-CL')}</span></div>
-                                <div className="flex justify-between"><span>Envío:</span><span>${shippingCost.toLocaleString('es-CL')}</span></div>
-                                <div className="flex justify-between font-bold text-xl"><span className="font-serif">Total:</span><span>${total.toLocaleString('es-CL')}</span></div>
-                                {paymentMethod === 'half' && (
-                                  <>
-                                    <div className="flex justify-between text-green-700 font-semibold"><span>A Pagar Online (50%):</span><span>${(total / 2).toLocaleString('es-CL')}</span></div>
-                                    <div className="flex justify-between text-orange-600"><span>Pendiente Presencial:</span><span>${(total / 2).toLocaleString('es-CL')}</span></div>
-                                  </>
+                            <div className="p-6 border-t border-blush-pink bg-white/50 space-y-4 flex-shrink-0">
+                                {/* Delivery Options */}
+                                <fieldset className="space-y-2">
+                                    <legend className="text-lg font-semibold text-cocoa-brown mb-2">Tipo de Entrega</legend>
+                                    <RadioOption id="pickup" name="deliveryType" value="pickup" checked={deliveryType === 'pickup'} onChange={() => setDeliveryType('pickup')} label="Retiro en Tienda" cost="$0" />
+                                    <RadioOption id="delivery" name="deliveryType" value="delivery" checked={deliveryType === 'delivery'} onChange={() => setDeliveryType('delivery')} label="Entrega a Domicilio" cost={`$${DELIVERY_SHIPPING_COST.toLocaleString('es-CL')}`} />
+                                </fieldset>
+                                
+                                {deliveryType === 'delivery' && (
+                                    <input type="text" placeholder="Dirección de Envío" className="w-full px-3 py-2 border border-blush-pink rounded-md focus:ring-rose-gold focus:border-rose-gold" />
                                 )}
-                            </div>
+                                
+                                <input type="date" className="w-full px-3 py-2 border border-blush-pink rounded-md focus:ring-rose-gold focus:border-rose-gold" defaultValue={new Date().toISOString().split('T')[0]}/>
+                                <textarea placeholder="Instrucciones Especiales (opcional)" rows={2} className="w-full px-3 py-2 border border-blush-pink rounded-md focus:ring-rose-gold focus:border-rose-gold"></textarea>
+                                
+                                {/* Payment Options */}
+                                <fieldset className="space-y-2">
+                                    <legend className="text-lg font-semibold text-cocoa-brown mb-2">Método de Pago</legend>
+                                    <RadioOption id="full_payment" name="paymentMethod" value="full" checked={paymentMethod === 'full'} onChange={() => setPaymentMethod('full')} label="Pago Completo Online" />
+                                    <RadioOption id="half_payment" name="paymentMethod" value="half" checked={paymentMethod === 'half'} onChange={() => setPaymentMethod('half')} label="Pagar 50% Online y 50% al Recibir" />
+                                </fieldset>
 
-                            <button onClick={handleConfirmOrder} className="w-full bg-rose-gold text-cocoa-brown font-bold py-3 rounded-lg hover:opacity-90 transition-opacity duration-300 shadow-md">
-                                Confirmar Pedido - Pagar ${amountToPayOnline.toLocaleString('es-CL')}
-                            </button>
-                        </div>
+                                <div className="space-y-2 border border-blush-pink p-4 rounded-md">
+                                    <h4 className="font-semibold">Detalles de la Tarjeta</h4>
+                                    <input type="text" placeholder="Número de Tarjeta" className="w-full px-3 py-2 border border-blush-pink rounded-md" />
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <input type="text" placeholder="MM/YY" className="col-span-1 px-3 py-2 border border-blush-pink rounded-md" />
+                                        <input type="text" placeholder="CVV" className="col-span-1 px-3 py-2 border border-blush-pink rounded-md" />
+                                    </div>
+                                    <input type="text" placeholder="Nombre en la Tarjeta" className="w-full px-3 py-2 border border-blush-pink rounded-md" />
+                                </div>
+
+                                {/* Totals */}
+                                <div className="space-y-1 text-cocoa-brown">
+                                    <div className="flex justify-between"><span>Subtotal:</span><span>${subtotal.toLocaleString('es-CL')}</span></div>
+                                    <div className="flex justify-between"><span>Envío:</span><span>${shippingCost.toLocaleString('es-CL')}</span></div>
+                                    <div className="flex justify-between font-bold text-xl"><span className="font-serif">Total:</span><span>${total.toLocaleString('es-CL')}</span></div>
+                                    {paymentMethod === 'half' && (
+                                    <>
+                                        <div className="flex justify-between text-green-700 font-semibold"><span>A Pagar Online (50%):</span><span>${(total / 2).toLocaleString('es-CL')}</span></div>
+                                        <div className="flex justify-between text-orange-600"><span>Pendiente Presencial:</span><span>${(total / 2).toLocaleString('es-CL')}</span></div>
+                                    </>
+                                    )}
+                                </div>
+
+                                <button onClick={handleConfirmOrder} className="w-full bg-rose-gold text-cocoa-brown font-bold py-3 rounded-lg hover:opacity-90 transition-opacity duration-300 shadow-md">
+                                    Confirmar Pedido - Pagar ${amountToPayOnline.toLocaleString('es-CL')}
+                                </button>
+                            </div>
+                        </>
                     )}
                 </div>
             </div>
