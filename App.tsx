@@ -13,6 +13,7 @@ import LoginScreen from './components/LoginScreen';
 import { InstagramIcon } from './components/icons/InstagramIcon';
 import { FacebookIcon } from './components/icons/FacebookIcon';
 import { WhatsappIcon } from './components/icons/WhatsappIcon';
+import { logoBase64 } from './assets/logo.ts';
 
 // Simple ID generator to ensure uniqueness during the session
 let lastId = INITIAL_PRODUCTS.reduce((max, p) => Math.max(max, p.id), 0);
@@ -26,10 +27,24 @@ const App: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [page, setPage] = useState(window.location.hash || '#');
+    const [siteLogo, setSiteLogo] = useState<string>(logoBase64);
     
     // Default role is 'customer'. Login is only for admin roles.
     const [currentUserRole, setCurrentUserRole] = useState<UserRole>('customer');
     const [analyticsData, setAnalyticsData] = useState<AnalyticsEvent[]>([]);
+
+    // Load logo from local storage on initial render
+    useEffect(() => {
+        const savedLogo = localStorage.getItem('siteLogo');
+        if (savedLogo) {
+            setSiteLogo(savedLogo);
+        }
+    }, []);
+
+    const handleUpdateLogo = (newLogo: string) => {
+        setSiteLogo(newLogo);
+        localStorage.setItem('siteLogo', newLogo);
+    };
 
     const handleLogin = (role: UserRole) => {
         setCurrentUserRole(role);
@@ -135,6 +150,8 @@ const App: React.FC = () => {
                             onUpdateCustomizationOptions={handleUpdateCustomizationOptions}
                             analyticsData={analyticsData}
                             currentUserRole={currentUserRole}
+                            siteLogo={siteLogo}
+                            onUpdateLogo={handleUpdateLogo}
                        />;
             case '#':
             case '#/':
@@ -146,6 +163,7 @@ const App: React.FC = () => {
     return (
         <div className="bg-cream min-h-screen text-cocoa-brown flex flex-col">
             <Header 
+                logoUrl={siteLogo}
                 onCartClick={handleToggleCart} 
                 cartItemCount={cartItemCount} 
                 currentPage={page}
@@ -161,8 +179,8 @@ const App: React.FC = () => {
                 <div className="container mx-auto px-6 py-12">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Column 1: About */}
-                        <div className="text-center md:text-left">
-                            <h3 className="text-2xl font-serif font-bold text-cocoa-brown mb-2">Pastelicias</h3>
+                        <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                            <img src={siteLogo} alt="Pastelicias Logo" className="h-20 w-auto mb-4" />
                             <p className="text-cocoa-brown/80">Repostería de diseño para tus momentos más especiales.</p>
                         </div>
                         

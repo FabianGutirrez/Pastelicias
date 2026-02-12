@@ -14,6 +14,8 @@ interface AdminPageProps {
     onUpdateCustomizationOptions: (newOptions: CustomizationCollection) => void;
     analyticsData: AnalyticsEvent[];
     currentUserRole: UserRole;
+    siteLogo: string;
+    onUpdateLogo: (newLogo: string) => void;
 }
 
 const emptyProduct: Omit<Product, 'id'> = {
@@ -29,7 +31,7 @@ const emptyProduct: Omit<Product, 'id'> = {
     availableCustomizations: [],
 };
 
-type AdminTab = 'analytics' | 'products' | 'options';
+type AdminTab = 'analytics' | 'products' | 'options' | 'settings';
 
 const AdminPage: React.FC<AdminPageProps> = ({ 
     products, 
@@ -39,12 +41,16 @@ const AdminPage: React.FC<AdminPageProps> = ({
     onDeleteProduct,
     onUpdateCustomizationOptions,
     analyticsData,
-    currentUserRole
+    currentUserRole,
+    siteLogo,
+    onUpdateLogo
 }) => {
     const [activeTab, setActiveTab] = useState<AdminTab>('analytics');
     const [editingProduct, setEditingProduct] = useState<Product | Omit<Product, 'id'> | null>(null);
     const [formState, setFormState] = useState<Product | Omit<Product, 'id'>>(emptyProduct);
     const [newOptions, setNewOptions] = useState<Record<keyof CustomizationCollection, string>>({ flavors: '', fillings: '', colors: '' });
+    const [newLogoPreview, setNewLogoPreview] = useState<string | null>(null);
+
 
     useEffect(() => {
         if (editingProduct) {
@@ -53,6 +59,26 @@ const AdminPage: React.FC<AdminPageProps> = ({
             setFormState(emptyProduct);
         }
     }, [editingProduct]);
+
+    const handleLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setNewLogoPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleSaveLogo = () => {
+        if (newLogoPreview) {
+            onUpdateLogo(newLogoPreview);
+            setNewLogoPreview(null);
+            alert('Logo actualizado con éxito.');
+        }
+    };
+
 
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -148,7 +174,10 @@ const AdminPage: React.FC<AdminPageProps> = ({
                 <TabButton title="Análisis" isActive={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} />
                 <TabButton title="Gestionar Productos" isActive={activeTab === 'products'} onClick={() => setActiveTab('products')} />
                 {currentUserRole === 'superadmin' && (
-                    <TabButton title="Gestionar Opciones" isActive={activeTab === 'options'} onClick={() => setActiveTab('options')} />
+                    <>
+                        <TabButton title="Gestionar Opciones" isActive={activeTab === 'options'} onClick={() => setActiveTab('options')} />
+                        <TabButton title="Configuración" isActive={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
+                    </>
                 )}
             </div>
 
@@ -181,6 +210,36 @@ const AdminPage: React.FC<AdminPageProps> = ({
                             <OptionManager title="Sabores" category="flavors" options={customizationOptions.flavors} newOptionValue={newOptions.flavors} onNewOptionChange={e => setNewOptions(p => ({...p, flavors: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
                             <OptionManager title="Rellenos" category="fillings" options={customizationOptions.fillings} newOptionValue={newOptions.fillings} onNewOptionChange={e => setNewOptions(p => ({...p, fillings: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
                             <OptionManager title="Colores" category="colors" options={customizationOptions.colors} newOptionValue={newOptions.colors} onNewOptionChange={e => setNewOptions(p => ({...p, colors: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
+                        </div>
+                    </div>
+                )}
+                {activeTab === 'settings' && currentUserRole === 'superadmin' && (
+                     <div className="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 className="text-2xl font-serif font-bold text-cocoa-brown mb-4">Configuración del Sitio</h3>
+                        <div className="space-y-6">
+                            {/* Logo Manager */}
+                            <div>
+                                <h4 className="font-bold font-serif text-cocoa-brown mb-2">Gestionar Logo</h4>
+                                <div className="flex flex-col sm:flex-row items-start gap-6 p-4 border border-blush-pink rounded-md">
+                                    <div className="text-center">
+                                        <p className="text-sm font-semibold mb-2">Logo Actual</p>
+                                        <img src={siteLogo} alt="Logo actual" className="w-28 h-28 object-contain rounded-md bg-cream p-2"/>
+                                    </div>
+                                    <div className="flex-grow">
+                                        <label htmlFor="logoUpload" className="block text-sm font-medium text-cocoa-brown mb-2">Subir nuevo logo:</label>
+                                        <input id="logoUpload" type="file" accept="image/png, image/jpeg, image/svg+xml" onChange={handleLogoFileChange} className="block w-full text-sm text-cocoa-brown file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-rose-gold/50 file:text-cocoa-brown hover:file:bg-rose-gold"/>
+                                        {newLogoPreview && (
+                                            <div className="mt-4">
+                                                <p className="text-sm font-semibold mb-2">Previsualización:</p>
+                                                <img src={newLogoPreview} alt="Previsualización del nuevo logo" className="w-28 h-28 object-contain rounded-md bg-cream p-2"/>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <button onClick={handleSaveLogo} disabled={!newLogoPreview} className="self-end bg-rose-gold text-cocoa-brown font-bold py-2 px-4 rounded-lg hover:bg-muted-mauve hover:text-white disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                        Guardar Logo
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}

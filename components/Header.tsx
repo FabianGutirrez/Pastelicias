@@ -7,8 +7,8 @@ import { UserRole } from '../types';
 import { UserIcon } from './icons/UserIcon';
 import { LogoutIcon } from './icons/LogoutIcon';
 
-
 interface HeaderProps {
+    logoUrl: string;
     onCartClick: () => void;
     cartItemCount: number;
     currentPage: string;
@@ -34,7 +34,7 @@ const NavLink: React.FC<{href: string; currentPage: string; children: React.Reac
 };
 
 
-const Header: React.FC<HeaderProps> = ({ onCartClick, cartItemCount, currentPage, isMenuOpen, setIsMenuOpen, currentUserRole, onLogout }) => {
+const Header: React.FC<HeaderProps> = ({ logoUrl, onCartClick, cartItemCount, currentPage, isMenuOpen, setIsMenuOpen, currentUserRole, onLogout }) => {
     const closeMenu = () => setIsMenuOpen(false);
 
     const navLinks = (
@@ -50,10 +50,10 @@ const Header: React.FC<HeaderProps> = ({ onCartClick, cartItemCount, currentPage
 
     return (
         <header className="bg-cream/80 backdrop-blur-sm sticky top-0 z-40 shadow-sm">
-            <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                <div className="text-2xl font-serif font-bold text-cocoa-brown">
-                    <a href="#">Pastelicias</a>
-                </div>
+            <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+                <a href="#">
+                    <img src={logoUrl} alt="Pastelicias Logo" className="h-14 w-auto" />
+                </a>
                 <nav className="hidden md:flex items-center space-x-8 text-cocoa-brown font-medium">
                     {navLinks}
                 </nav>
@@ -95,9 +95,9 @@ const Header: React.FC<HeaderProps> = ({ onCartClick, cartItemCount, currentPage
             {/* Mobile Menu Overlay */}
             <div className={`fixed inset-0 bg-cream z-50 transform transition-transform duration-300 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} md:hidden`}>
                  <div className="flex justify-between items-center p-4 border-b border-blush-pink">
-                     <div className="text-2xl font-serif font-bold text-cocoa-brown">
-                        <a href="#" onClick={closeMenu}>Pastelicias</a>
-                    </div>
+                     <a href="#" onClick={closeMenu}>
+                        <img src={logoUrl} alt="Pastelicias Logo" className="h-14 w-auto" />
+                    </a>
                     <button onClick={closeMenu} className="text-cocoa-brown p-2">
                         <XMarkIcon />
                     </button>
