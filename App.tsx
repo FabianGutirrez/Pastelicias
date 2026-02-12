@@ -10,6 +10,9 @@ import CatalogPage from './components/CatalogPage';
 import AdminPage from './components/AdminPage';
 import ContactPage from './components/ContactPage';
 import LoginScreen from './components/LoginScreen';
+import { InstagramIcon } from './components/icons/InstagramIcon';
+import { FacebookIcon } from './components/icons/FacebookIcon';
+import { WhatsappIcon } from './components/icons/WhatsappIcon';
 
 // Simple ID generator to ensure uniqueness during the session
 let lastId = INITIAL_PRODUCTS.reduce((max, p) => Math.max(max, p.id), 0);
@@ -141,7 +144,7 @@ const App: React.FC = () => {
     };
 
     return (
-        <div className="bg-cream min-h-screen text-cocoa-brown">
+        <div className="bg-cream min-h-screen text-cocoa-brown flex flex-col">
             <Header 
                 onCartClick={handleToggleCart} 
                 cartItemCount={cartItemCount} 
@@ -151,13 +154,50 @@ const App: React.FC = () => {
                 currentUserRole={currentUserRole}
                 onLogout={handleLogout}
             />
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 py-8 flex-grow">
                 {renderPage()}
             </main>
-            <footer className="bg-blush-pink mt-16 py-8">
-              <div className="container mx-auto text-center text-cocoa-brown">
-                <p>&copy; 2024 Pastelicias. Todos los derechos reservados.</p>
-              </div>
+            <footer className="bg-blush-pink mt-16">
+                <div className="container mx-auto px-6 py-12">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {/* Column 1: About */}
+                        <div className="text-center md:text-left">
+                            <h3 className="text-2xl font-serif font-bold text-cocoa-brown mb-2">Pastelicias</h3>
+                            <p className="text-cocoa-brown/80">Repostería de diseño para tus momentos más especiales.</p>
+                        </div>
+                        
+                        {/* Column 2: Links */}
+                        <div className="text-center">
+                            <h4 className="font-bold font-serif text-cocoa-brown mb-3">Navegación</h4>
+                            <nav className="flex flex-col space-y-2 text-cocoa-brown/90">
+                                <a href="#" className="hover:underline hover:text-cocoa-brown">Inicio</a>
+                                <a href="#catalog" className="hover:underline hover:text-cocoa-brown">Catálogo</a>
+                                <a href="#contact" className="hover:underline hover:text-cocoa-brown">Contacto</a>
+                            </nav>
+                        </div>
+
+                        {/* Column 3: Social */}
+                        <div className="text-center md:text-right">
+                             <h4 className="font-bold font-serif text-cocoa-brown mb-3">Síguenos</h4>
+                             <div className="flex justify-center md:justify-end space-x-4">
+                                 <a href="#" aria-label="Instagram" className="text-cocoa-brown hover:text-muted-mauve transition-colors">
+                                    <InstagramIcon />
+                                 </a>
+                                 <a href="#" aria-label="Facebook" className="text-cocoa-brown hover:text-muted-mauve transition-colors">
+                                    <FacebookIcon />
+                                 </a>
+                                 <a href="#" aria-label="WhatsApp" className="text-cocoa-brown hover:text-muted-mauve transition-colors">
+                                    <WhatsappIcon />
+                                 </a>
+                             </div>
+                        </div>
+                    </div>
+
+                    {/* Bottom Bar */}
+                    <div className="mt-12 pt-8 border-t border-rose-gold/50 text-center text-cocoa-brown/70 text-sm">
+                         <p>&copy; 2024 Pastelicias. Todos los derechos reservados.</p>
+                    </div>
+                </div>
             </footer>
             {selectedProduct && (
                 <ProductModal 
