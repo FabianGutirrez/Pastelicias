@@ -150,7 +150,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   },
   {
     id: 10,
-    name: 'Promo 100 Dulces a Elección',
+    name: 'Promo 3: 100 Dulces a Elección',
     description: 'Crea tu propia selección de 100 delicias dulces. ¡Tú eliges!',
     longDescription: 'Arma tu caja perfecta con 100 unidades, eligiendo entre 4 a 5 variedades de nuestra selección dulce. Indica tus preferidas en las "Instrucciones Especiales" del carrito.',
     price: 30000,
@@ -298,6 +298,21 @@ export const INITIAL_PRODUCTS: Product[] = [
     priceTiers: [
       { quantity: 50, price: 15000, label: '50 unidades' },
       { quantity: 100, price: 25000, label: '100 unidades' }
+    ],
+    availableCustomizations: []
+  },
+  {
+    id: 20,
+    name: 'Promo 4: 100 Salados a Elección',
+    description: 'Elige 4 o 5 variedades y arma tu caja salada perfecta con 100 unidades.',
+    longDescription: 'Crea tu combinación ideal para cualquier evento con 100 bocados salados. Puedes elegir entre 4 y 5 de nuestras deliciosas variedades. Indica tus preferidas en las "Instrucciones Especiales" del carrito.',
+    price: 40000,
+    imageUrl: 'https://images.pexels.com/photos/14737299/pexels-photo-14737299.jpeg?auto=compress&cs=tinysrgb&w=600',
+    inStock: true,
+    isFeatured: true,
+    category: 'promocion',
+    priceTiers: [
+      { quantity: 100, price: 40000, label: '100 unidades (4-5 variedades)' }
     ],
     availableCustomizations: []
   }
