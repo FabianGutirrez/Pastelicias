@@ -55,8 +55,8 @@ const App: React.FC = () => {
             product, selectedTier, customizations
         };
         setCartItems(prevItems => [...prevItems, newItem]);
-        setSelectedProduct(null);
-        setIsCartOpen(true);
+        setSelectedProduct(null); // This closes the modal
+        // setIsCartOpen(true); // This line is removed to prevent the cart from opening automatically
     };
     
     const handleRemoveFromCart = (itemId: string) => {
