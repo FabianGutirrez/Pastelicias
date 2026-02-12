@@ -1,7 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { Product, CustomizationCollection } from '../types';
+import { Product, CustomizationCollection, AnalyticsEvent, UserRole } from '../types';
 import { TrashIcon } from './icons/TrashIcon';
+import AnalyticsDashboard from './AnalyticsDashboard';
+
 
 interface AdminPageProps {
     products: Product[];
@@ -10,6 +12,8 @@ interface AdminPageProps {
     onUpdateProduct: (product: Product) => void;
     onDeleteProduct: (productId: number) => void;
     onUpdateCustomizationOptions: (newOptions: CustomizationCollection) => void;
+    analyticsData: AnalyticsEvent[];
+    currentUserRole: UserRole;
 }
 
 const emptyProduct: Omit<Product, 'id'> = {
@@ -25,6 +29,8 @@ const emptyProduct: Omit<Product, 'id'> = {
     availableCustomizations: [],
 };
 
+type AdminTab = 'analytics' | 'products' | 'options';
+
 const AdminPage: React.FC<AdminPageProps> = ({ 
     products, 
     customizationOptions,
@@ -32,7 +38,10 @@ const AdminPage: React.FC<AdminPageProps> = ({
     onUpdateProduct,
     onDeleteProduct,
     onUpdateCustomizationOptions,
+    analyticsData,
+    currentUserRole
 }) => {
+    const [activeTab, setActiveTab] = useState<AdminTab>('analytics');
     const [editingProduct, setEditingProduct] = useState<Product | Omit<Product, 'id'> | null>(null);
     const [formState, setFormState] = useState<Product | Omit<Product, 'id'>>(emptyProduct);
     const [newOptions, setNewOptions] = useState<Record<keyof CustomizationCollection, string>>({ flavors: '', fillings: '', colors: '' });
@@ -131,16 +140,58 @@ const AdminPage: React.FC<AdminPageProps> = ({
     };
 
     return (
-        <section id="admin" className="space-y-12">
+        <section id="admin" className="space-y-8">
             <h2 className="text-3xl font-serif font-bold text-center text-cocoa-brown">Panel de Administración</h2>
             
+             {/* Tabs */}
+            <div className="flex justify-center border-b border-blush-pink mb-6">
+                <TabButton title="Análisis" isActive={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} />
+                <TabButton title="Gestionar Productos" isActive={activeTab === 'products'} onClick={() => setActiveTab('products')} />
+                {currentUserRole === 'superadmin' && (
+                    <TabButton title="Gestionar Opciones" isActive={activeTab === 'options'} onClick={() => setActiveTab('options')} />
+                )}
+            </div>
+
+            {/* Tab Content */}
+            <div>
+                {activeTab === 'analytics' && <AnalyticsDashboard data={analyticsData} products={products} />}
+                {activeTab === 'products' && (
+                    <div className="bg-white p-6 rounded-lg shadow-lg">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-2xl font-serif font-bold text-cocoa-brown">Productos</h3>
+                            <button onClick={() => setEditingProduct(emptyProduct)} className="bg-rose-gold text-cocoa-brown font-bold py-2 px-4 rounded-lg hover:bg-muted-mauve hover:text-white">Añadir Nuevo Producto</button>
+                        </div>
+                        <div className="space-y-2">
+                            {products.map(product => (
+                                <div key={product.id} className="flex items-center justify-between p-3 bg-cream/50 rounded-md">
+                                    <span className="font-semibold">{product.name}</span>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => setEditingProduct(product)} className="text-sm bg-blue-100 text-blue-800 py-1 px-3 rounded-md hover:bg-blue-200">Editar</button>
+                                        <button onClick={() => handleDelete(product.id)} className="text-sm bg-red-100 text-red-800 py-1 px-3 rounded-md hover:bg-red-200">Eliminar</button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                {activeTab === 'options' && currentUserRole === 'superadmin' && (
+                     <div className="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 className="text-2xl font-serif font-bold text-cocoa-brown mb-4">Opciones de Personalización</h3>
+                        <div className="grid md:grid-cols-3 gap-6">
+                            <OptionManager title="Sabores" category="flavors" options={customizationOptions.flavors} newOptionValue={newOptions.flavors} onNewOptionChange={e => setNewOptions(p => ({...p, flavors: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
+                            <OptionManager title="Rellenos" category="fillings" options={customizationOptions.fillings} newOptionValue={newOptions.fillings} onNewOptionChange={e => setNewOptions(p => ({...p, fillings: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
+                            <OptionManager title="Colores" category="colors" options={customizationOptions.colors} newOptionValue={newOptions.colors} onNewOptionChange={e => setNewOptions(p => ({...p, colors: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
+                        </div>
+                    </div>
+                )}
+            </div>
+
             {/* Product Form Modal */}
             {editingProduct && (
                 <div className="fixed inset-0 bg-black/60 z-50 p-4 flex items-center justify-center animate-fade-in" onClick={() => setEditingProduct(null)}>
                     <div className="bg-cream rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-scale-in" onClick={e => e.stopPropagation()}>
                         <form onSubmit={handleSubmit} className="p-8 space-y-4">
                             <h3 className="text-2xl font-serif font-bold text-cocoa-brown">{'id' in editingProduct ? 'Editar' : 'Añadir'} Producto</h3>
-                            {/* Form fields */}
                             <AdminInput label="Nombre del Producto" name="name" value={formState.name} onChange={handleFormChange} />
                             <AdminTextarea label="Descripción Corta" name="description" value={formState.description} onChange={handleFormChange} />
                             <AdminTextarea label="Descripción Larga" name="longDescription" value={formState.longDescription} onChange={handleFormChange} rows={4}/>
@@ -202,38 +253,23 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     </div>
                 </div>
             )}
-
-            {/* Product Management */}
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-2xl font-serif font-bold text-cocoa-brown">Gestionar Productos</h3>
-                    <button onClick={() => setEditingProduct(emptyProduct)} className="bg-rose-gold text-cocoa-brown font-bold py-2 px-4 rounded-lg hover:bg-muted-mauve hover:text-white">Añadir Nuevo Producto</button>
-                </div>
-                <div className="space-y-2">
-                    {products.map(product => (
-                        <div key={product.id} className="flex items-center justify-between p-3 bg-cream/50 rounded-md">
-                            <span className="font-semibold">{product.name}</span>
-                            <div className="flex gap-2">
-                                <button onClick={() => setEditingProduct(product)} className="text-sm bg-blue-100 text-blue-800 py-1 px-3 rounded-md hover:bg-blue-200">Editar</button>
-                                <button onClick={() => handleDelete(product.id)} className="text-sm bg-red-100 text-red-800 py-1 px-3 rounded-md hover:bg-red-200">Eliminar</button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Customization Options Management */}
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-                <h3 className="text-2xl font-serif font-bold text-cocoa-brown mb-4">Gestionar Opciones de Personalización</h3>
-                <div className="grid md:grid-cols-3 gap-6">
-                    <OptionManager title="Sabores" category="flavors" options={customizationOptions.flavors} newOptionValue={newOptions.flavors} onNewOptionChange={e => setNewOptions(p => ({...p, flavors: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
-                    <OptionManager title="Rellenos" category="fillings" options={customizationOptions.fillings} newOptionValue={newOptions.fillings} onNewOptionChange={e => setNewOptions(p => ({...p, fillings: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
-                    <OptionManager title="Colores" category="colors" options={customizationOptions.colors} newOptionValue={newOptions.colors} onNewOptionChange={e => setNewOptions(p => ({...p, colors: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
-                </div>
-            </div>
         </section>
     );
 };
+
+const TabButton: React.FC<{title: string; isActive: boolean; onClick: () => void}> = ({ title, isActive, onClick }) => (
+    <button
+        onClick={onClick}
+        className={`px-4 py-2 text-lg font-serif transition-colors duration-300 ${
+            isActive ? 'border-b-2 border-rose-gold text-cocoa-brown' : 'text-muted-mauve hover:text-cocoa-brown'
+        }`}
+        role="tab"
+        aria-selected={isActive}
+    >
+        {title}
+    </button>
+);
+
 
 // Helper components for Admin form
 const AdminInput: React.FC<any> = ({ label, ...props }) => (

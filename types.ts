@@ -40,3 +40,13 @@ export interface CustomizationCollection {
   fillings: string[];
   colors: string[];
 }
+
+export type UserRole = 'customer' | 'admin' | 'superadmin';
+
+export interface AnalyticsEvent {
+    type: 'view' | 'addToCart' | 'order';
+    timestamp: Date;
+    productId?: number;
+    items?: CartItem[];
+    total?: number;
+}

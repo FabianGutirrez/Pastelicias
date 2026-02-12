@@ -1,4 +1,34 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* Estilos personalizados */
+
+@layer base {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  * {
+     transition-property: all;
+     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+     transition-duration: 150ms;
+  }
+}
+
+@layer components {
+  .admin-input {
+    @apply w-full px-3 py-2 border border-blush-pink rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-rose-gold focus:border-rose-gold;
+  }
+  
+  /* Chart Bar Styles */
+  .chart-bar-container {
+      @apply flex-1 flex flex-col items-center justify-end;
+  }
+  .chart-bar {
+      @apply w-full bg-rose-gold rounded-t-md hover:bg-muted-mauve;
+      transition: height 0.3s ease-in-out;
+  }
+  .chart-label {
+      @apply text-xs mt-1 text-cocoa-brown;
+  }
+}

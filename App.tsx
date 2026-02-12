@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Product, CartItem, CustomizationOptions, CustomizationCollection } from './types';
+import { Product, CartItem, CustomizationOptions, CustomizationCollection, UserRole, AnalyticsEvent } from './types';
 import { INITIAL_PRODUCTS, INITIAL_CUSTOMIZATION_OPTIONS } from './constants';
 import Header from './components/Header';
 import ProductModal from './components/ProductModal';
@@ -9,6 +9,7 @@ import HomePage from './components/HomePage';
 import CatalogPage from './components/CatalogPage';
 import AdminPage from './components/AdminPage';
 import ContactPage from './components/ContactPage';
+import LoginScreen from './components/LoginScreen';
 
 // Simple ID generator to ensure uniqueness during the session
 let lastId = INITIAL_PRODUCTS.reduce((max, p) => Math.max(max, p.id), 0);
@@ -22,6 +23,24 @@ const App: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [page, setPage] = useState(window.location.hash || '#');
+    
+    // Default role is 'customer'. Login is only for admin roles.
+    const [currentUserRole, setCurrentUserRole] = useState<UserRole>('customer');
+    const [analyticsData, setAnalyticsData] = useState<AnalyticsEvent[]>([]);
+
+    const handleLogin = (role: UserRole) => {
+        setCurrentUserRole(role);
+        window.location.hash = '#admin'; // Redirect to admin panel after login
+    };
+
+    const handleLogout = () => {
+        setCurrentUserRole('customer');
+        window.location.hash = '#'; // Redirect to home page on logout
+    };
+
+    const logAnalyticsEvent = (event: Omit<AnalyticsEvent, 'timestamp'>) => {
+        setAnalyticsData(prev => [...prev, { ...event, timestamp: new Date() }]);
+    };
 
     useEffect(() => {
         const handleHashChange = () => {
@@ -32,7 +51,6 @@ const App: React.FC = () => {
         return () => window.removeEventListener('hashchange', handleHashChange);
     }, []);
 
-    // Global effect to lock body scroll when overlays are open
     useEffect(() => {
         const body = document.body;
         if (isCartOpen || selectedProduct || isMenuOpen) {
@@ -40,12 +58,14 @@ const App: React.FC = () => {
         } else {
             body.style.overflow = 'auto';
         }
-        return () => { // Cleanup
-            body.style.overflow = 'auto';
-        };
+        return () => { body.style.overflow = 'auto'; };
     }, [isCartOpen, selectedProduct, isMenuOpen]);
 
-    const handleSelectProduct = (product: Product) => setSelectedProduct(product);
+    const handleSelectProduct = (product: Product) => {
+        logAnalyticsEvent({ type: 'view', productId: product.id });
+        setSelectedProduct(product);
+    };
+
     const handleCloseModal = () => setSelectedProduct(null);
     const handleToggleCart = () => setIsCartOpen(prev => !prev);
 
@@ -54,13 +74,20 @@ const App: React.FC = () => {
             id: `${product.id}-${selectedTier.quantity}-${Date.now()}`,
             product, selectedTier, customizations
         };
+        logAnalyticsEvent({ type: 'addToCart', productId: product.id });
         setCartItems(prevItems => [...prevItems, newItem]);
-        setSelectedProduct(null); // This closes the modal
-        // setIsCartOpen(true); // This line is removed to prevent the cart from opening automatically
+        setSelectedProduct(null);
     };
     
     const handleRemoveFromCart = (itemId: string) => {
         setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
+    };
+
+    const handleConfirmOrder = (confirmedItems: CartItem[], orderTotal: number) => {
+        logAnalyticsEvent({ type: 'order', items: confirmedItems, total: orderTotal });
+        alert('¡Pedido Confirmado! Gracias por tu compra. (Esto es una simulación)');
+        setCartItems([]);
+        setIsCartOpen(false);
     };
 
     const cartItemCount = useMemo(() => {
@@ -69,7 +96,6 @@ const App: React.FC = () => {
     
     const featuredProducts = useMemo(() => products.filter(p => p.isFeatured), [products]);
 
-    // Admin Panel Handlers
     const handleAddProduct = (product: Omit<Product, 'id'>) => {
         setProducts(prev => [...prev, { ...product, id: generateUniqueId() }]);
     };
@@ -84,7 +110,14 @@ const App: React.FC = () => {
     };
 
     const renderPage = () => {
+        if (page === '#admin' && currentUserRole === 'customer') {
+             // Redirect to home if a customer tries to access admin page
+            return <HomePage products={featuredProducts} onCustomizeClick={handleSelectProduct} />;
+        }
+        
         switch (page) {
+            case '#login':
+                return <LoginScreen onLogin={handleLogin} />;
             case '#catalog':
                 return <CatalogPage products={products} onCustomizeClick={handleSelectProduct} />;
             case '#contact':
@@ -97,9 +130,11 @@ const App: React.FC = () => {
                             onUpdateProduct={handleUpdateProduct}
                             onDeleteProduct={handleDeleteProduct}
                             onUpdateCustomizationOptions={handleUpdateCustomizationOptions}
+                            analyticsData={analyticsData}
+                            currentUserRole={currentUserRole}
                        />;
             case '#':
-            case '#/': // Also support the old home link for robustness
+            case '#/':
             default:
                 return <HomePage products={featuredProducts} onCustomizeClick={handleSelectProduct} />;
         }
@@ -113,6 +148,8 @@ const App: React.FC = () => {
                 currentPage={page}
                 isMenuOpen={isMenuOpen}
                 setIsMenuOpen={setIsMenuOpen}
+                currentUserRole={currentUserRole}
+                onLogout={handleLogout}
             />
             <main className="container mx-auto px-4 py-8">
                 {renderPage()}
@@ -135,6 +172,8 @@ const App: React.FC = () => {
                 onClose={handleToggleCart}
                 cartItems={cartItems}
                 onRemoveItem={handleRemoveFromCart}
+                onConfirmOrder={handleConfirmOrder}
+                cartItemCount={cartItemCount}
             />
         </div>
     );

@@ -9,11 +9,13 @@ interface CartSidebarProps {
     onClose: () => void;
     cartItems: CartItem[];
     onRemoveItem: (itemId: string) => void;
+    onConfirmOrder: (items: CartItem[], total: number) => void;
+    cartItemCount: number;
 }
 
 const DELIVERY_SHIPPING_COST = 5000; // Centralized shipping cost
 
-const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, onRemoveItem }) => {
+const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, onRemoveItem, onConfirmOrder, cartItemCount }) => {
     const [deliveryType, setDeliveryType] = useState<'pickup' | 'delivery'>('pickup');
     const [paymentMethod, setPaymentMethod] = useState<'full' | 'half'>('full');
     
@@ -53,8 +55,8 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
         [paymentMethod, total]
     );
 
-    const handleConfirmOrder = () => {
-        alert('¡Pedido Confirmado! Gracias por tu compra. (Esto es una simulación)');
+    const handleConfirmClick = () => {
+        onConfirmOrder(cartItems, total);
     };
 
     return (
@@ -74,7 +76,14 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
             >
                 <div className="flex flex-col h-full">
                     <div className="flex justify-between items-center p-6 border-b border-blush-pink flex-shrink-0">
-                        <h2 id="sidebar-title" className="text-2xl font-serif font-bold text-cocoa-brown">Tu Carrito</h2>
+                        <div className="flex items-center gap-3">
+                            <h2 id="sidebar-title" className="text-2xl font-serif font-bold text-cocoa-brown">Tu Carrito</h2>
+                            {cartItems.length > 0 && (
+                                <span className="bg-rose-gold text-cream text-sm font-bold rounded-full h-7 w-7 flex items-center justify-center">
+                                    {cartItemCount}
+                                </span>
+                            )}
+                        </div>
                         <button onClick={onClose} className="text-cocoa-brown hover:text-red-500 transition-colors" aria-label="Cerrar carrito">
                             <XMarkIcon />
                         </button>
@@ -140,7 +149,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
                                     )}
                                 </div>
 
-                                <button onClick={handleConfirmOrder} className="w-full bg-rose-gold text-cocoa-brown font-bold py-3 rounded-lg hover:opacity-90 transition-opacity duration-300 shadow-md">
+                                <button onClick={handleConfirmClick} className="w-full bg-rose-gold text-cocoa-brown font-bold py-3 rounded-lg hover:opacity-90 transition-opacity duration-300 shadow-md">
                                     Confirmar Pedido - Pagar ${amountToPayOnline.toLocaleString('es-CL')}
                                 </button>
                             </div>
@@ -156,7 +165,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
 const CartItemCard: React.FC<{item: CartItem; onRemoveItem: (itemId: string) => void}> = ({ item, onRemoveItem }) => {
     return (
         <div className="flex items-start gap-4 bg-white p-3 rounded-lg shadow-sm">
-            <img src={item.product.imageUrl} alt={item.product.name} className="w-24 h-24 object-cover rounded-md" />
+            <img src={item.product.imageUrl} alt={item.product.name} className="w-24 h-24 object-cover rounded-md flex-shrink-0" />
             <div className="flex-grow">
                 <h4 className="font-bold font-serif text-cocoa-brown">{item.product.name}</h4>
                 <p className="text-sm font-semibold text-muted-mauve">{item.selectedTier.label}</p>

@@ -3,6 +3,10 @@ import React from 'react';
 import { ShoppingCartIcon } from './icons/ShoppingCartIcon';
 import { MenuIcon } from './icons/MenuIcon';
 import { XMarkIcon } from './icons/XMarkIcon';
+import { UserRole } from '../types';
+import { UserIcon } from './icons/UserIcon';
+import { LogoutIcon } from './icons/LogoutIcon';
+
 
 interface HeaderProps {
     onCartClick: () => void;
@@ -10,6 +14,8 @@ interface HeaderProps {
     currentPage: string;
     isMenuOpen: boolean;
     setIsMenuOpen: (isOpen: boolean) => void;
+    currentUserRole: UserRole;
+    onLogout: () => void;
 }
 
 const NavLink: React.FC<{href: string; currentPage: string; children: React.ReactNode; className?: string, onClick: () => void;}> = 
@@ -28,7 +34,7 @@ const NavLink: React.FC<{href: string; currentPage: string; children: React.Reac
 };
 
 
-const Header: React.FC<HeaderProps> = ({ onCartClick, cartItemCount, currentPage, isMenuOpen, setIsMenuOpen }) => {
+const Header: React.FC<HeaderProps> = ({ onCartClick, cartItemCount, currentPage, isMenuOpen, setIsMenuOpen, currentUserRole, onLogout }) => {
     const closeMenu = () => setIsMenuOpen(false);
 
     const navLinks = (
@@ -36,7 +42,9 @@ const Header: React.FC<HeaderProps> = ({ onCartClick, cartItemCount, currentPage
         <NavLink href="#" currentPage={currentPage} onClick={closeMenu}>Inicio</NavLink>
         <NavLink href="#catalog" currentPage={currentPage} onClick={closeMenu}>Catálogo</NavLink>
         <NavLink href="#contact" currentPage={currentPage} onClick={closeMenu}>Contacto</NavLink>
-        <NavLink href="#admin" currentPage={currentPage} onClick={closeMenu} className="text-muted-mauve hover:text-cocoa-brown font-bold">Admin</NavLink>
+        {(currentUserRole === 'admin' || currentUserRole === 'superadmin') && (
+            <NavLink href="#admin" currentPage={currentPage} onClick={closeMenu} className="text-muted-mauve hover:text-cocoa-brown font-bold">Admin</NavLink>
+        )}
       </>
     );
 
@@ -49,7 +57,23 @@ const Header: React.FC<HeaderProps> = ({ onCartClick, cartItemCount, currentPage
                 <nav className="hidden md:flex items-center space-x-8 text-cocoa-brown font-medium">
                     {navLinks}
                 </nav>
-                <div className="flex items-center">
+                <div className="flex items-center gap-4">
+                     {currentUserRole === 'customer' ? (
+                        <a href="#login" className="flex items-center gap-2 bg-white border border-blush-pink rounded-full px-3 py-1 text-sm font-semibold hover:bg-blush-pink/50 transition-colors">
+                            <UserIcon />
+                            <span>Acceso Admin</span>
+                        </a>
+                    ) : (
+                        <div className="flex items-center gap-2 bg-white border border-blush-pink rounded-full px-3 py-1 text-sm">
+                            <UserIcon />
+                            <span className="font-semibold capitalize">{currentUserRole}</span>
+                            <button onClick={onLogout} title="Cerrar Sesión" className="ml-1 text-gray-500 hover:text-red-500">
+                               <LogoutIcon />
+                            </button>
+                        </div>
+                    )}
+
+
                     <button 
                         onClick={onCartClick} 
                         className="relative text-cocoa-brown hover:text-muted-mauve transition-colors p-2"
@@ -62,7 +86,7 @@ const Header: React.FC<HeaderProps> = ({ onCartClick, cartItemCount, currentPage
                             </span>
                         )}
                     </button>
-                    <button className="md:hidden text-cocoa-brown p-2 ml-2" onClick={() => setIsMenuOpen(true)}>
+                    <button className="md:hidden text-cocoa-brown p-2" onClick={() => setIsMenuOpen(true)}>
                         <MenuIcon />
                     </button>
                 </div>
