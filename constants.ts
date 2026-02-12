@@ -120,9 +120,9 @@ export const INITIAL_PRODUCTS: Product[] = [
   },
   {
     id: 8,
-    name: 'Promo 1 (120 Unidades)',
-    description: 'Un surtido dulce completo para tus celebraciones, combinando nuestros mejores productos.',
-    longDescription: '¡La combinación ideal para satisfacer a todos tus invitados! Esta promoción incluye: 40 mini cupcakes, 40 mini donas, 20 mashpops y 20 cakepops.',
+    name: 'Promo 1 (120 Unidades Fijas)',
+    description: 'Un surtido dulce completo y predefinido para tus celebraciones.',
+    longDescription: '¡La combinación ideal para satisfacer a todos! Esta promoción incluye un surtido fijo: 40 mini cupcakes, 40 mini donas, 20 mashpops y 20 cakepops. No es personalizable.',
     price: 22000,
     imageUrl: 'https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg?auto=compress&cs=tinysrgb&w=600',
     inStock: true,
@@ -134,25 +134,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     availableCustomizations: []
   },
   {
-    id: 9,
-    name: 'Promo 2 (240 Unidades)',
-    description: 'El doble de sabor para eventos más grandes. Una selección generosa y variada.',
-    longDescription: 'Perfecto para grandes celebraciones. Esta promoción incluye: 80 mini cupcakes, 80 mini donas, 40 mashpops y 40 cakepops. ¡Nadie se quedará sin su postre favorito!',
-    price: 40000,
-    imageUrl: 'https://images.pexels.com/photos/2067423/pexels-photo-2067423.jpeg?auto=compress&cs=tinysrgb&w=600',
-    inStock: true,
-    isFeatured: false,
-    category: 'promocion',
-    priceTiers: [
-      { quantity: 240, price: 40000, label: 'Total 240 unidades' }
-    ],
-    availableCustomizations: []
-  },
-  {
     id: 10,
-    name: 'Promo 3: 100 Dulces a Elección',
-    description: 'Crea tu propia selección de 100 delicias dulces. ¡Tú eliges!',
-    longDescription: 'Arma tu caja perfecta con 100 unidades, eligiendo entre 4 a 5 variedades de nuestra selección dulce. Indica tus preferidas en las "Instrucciones Especiales" del carrito.',
+    name: 'Promo Dulce: Arma tu Caja',
+    description: 'Crea tu propia selección de delicias dulces. ¡Tú eliges 5 variedades!',
+    longDescription: 'Arma tu caja perfecta eligiendo 5 variedades de nuestra selección dulce. Ideal para personalizar tu mesa de postres o para regalar una experiencia única.',
     price: 30000,
     imageUrl: 'https://images.pexels.com/photos/2144112/pexels-photo-2144112.jpeg?auto=compress&cs=tinysrgb&w=600',
     inStock: true,
@@ -163,7 +148,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     ],
     selectableProducts: {
       maxSelections: 5,
-      productIds: [2, 3, 4, 5, 6, 7, 21, 22] // Mini Donas, Cakepops, Mashpops, Mini Pie, Mini Tartaletas, Mini Berlines, etc.
+      productIds: [2, 3, 4, 5, 6, 7, 21, 22] // Donas, Cakepops, Mashpops, Pie, Tartaletas, Berlines, Tacitas, Cachitos
     }
   },
   {
@@ -185,28 +170,27 @@ export const INITIAL_PRODUCTS: Product[] = [
     id: 12,
     name: 'Tapaditos Surtidos',
     description: 'Pequeños sándwiches en pan suave con una variedad de rellenos frescos.',
-    longDescription: 'Una selección de tapaditos con rellenos clásicos y deliciosos. Perfectos para cócteles, reuniones de oficina o cualquier evento donde quieras ofrecer una opción salada y fresca.',
-    price: 17000,
-    imageUrl: 'https://images.pexels.com/photos/14737299/pexels-photo-14737299.jpeg?auto=compress&cs=tinysrgb&w=600',
+    longDescription: 'Una selección de tapaditos clásicos con rellenos como ave-pimiento, pasta de huevo y jamón-queso. Perfectos para cualquier cóctel o reunión.',
+    price: 18000,
+    imageUrl: 'https://images.pexels.com/photos/806361/pexels-photo-806361.jpeg?auto=compress&cs=tinysrgb&w=600',
     inStock: true,
     category: 'salado',
     priceTiers: [
-        { quantity: 25, price: 17000, label: '25 unidades' },
-        { quantity: 50, price: 30000, label: '50 unidades' }
+        { quantity: 50, price: 18000, label: '50 unidades' },
+        { quantity: 100, price: 32000, label: '100 unidades' }
     ],
     availableCustomizations: []
   },
   {
     id: 13,
-    name: 'Mini Pizzas',
-    description: 'El sabor de la pizza en un formato perfecto para cóctel. ¡A todos les encantan!',
-    longDescription: 'Bases de pizza esponjosas cubiertas con salsa de tomate, queso y orégano. Un clásico que nunca falla y que es fácil de disfrutar en cualquier tipo de reunión.',
-    price: 9500,
-    imageUrl: 'https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg?auto=compress&cs=tinysrgb&w=600',
-    inStock: false,
+    name: 'Mini Chaparritas',
+    description: 'Crujientes salchichas envueltas en masa horneada, un clásico irresistible.',
+    longDescription: 'Las favoritas de todos. Mini salchichas de alta calidad envueltas en una masa suave y dorada, horneadas hasta la perfección. Se sirven calientes y deliciosas.',
+    price: 17000,
+    imageUrl: 'https://images.pexels.com/photos/14876646/pexels-photo-14876646.jpeg?auto=compress&cs=tinysrgb&w=600',
+    inStock: true,
     category: 'salado',
     priceTiers: [
-        { quantity: 25, price: 9500, label: '25 unidades' },
         { quantity: 50, price: 17000, label: '50 unidades' },
         { quantity: 100, price: 30000, label: '100 unidades' }
     ],
@@ -214,157 +198,70 @@ export const INITIAL_PRODUCTS: Product[] = [
   },
   {
     id: 14,
-    name: 'Caja Mixta 50 Dulce y 50 Salado',
-    description: 'El equilibrio perfecto entre dulce y salado. 100 bocados para todos los gustos.',
-    longDescription: '¿No puedes decidirte? ¡No hay problema! Esta caja incluye 50 delicias dulces (mini donas, mini cupcakes, mini pie, tartaletas) y 50 bocados salados (canapés, mini empanadas, mini pizza, etc).',
-    price: 23000,
-    imageUrl: 'https://images.pexels.com/photos/2067396/pexels-photo-2067396.jpeg?auto=compress&cs=tinysrgb&w=600',
-    inStock: true,
-    isFeatured: true,
-    category: 'promocion',
-    priceTiers: [
-        { quantity: 100, price: 23000, label: 'Caja 50 dulce y 50 salado' }
-    ],
-    availableCustomizations: []
-  },
-  {
-    id: 15,
-    name: 'Mini Chaparritas',
-    description: 'Sabrosas mini vienesas envueltas en masa horneada. El bocado perfecto.',
-    longDescription: 'Un clásico irresistible para cualquier evento. Nuestras mini chaparritas son perfectas para picar, con una suave masa que envuelve una sabrosa vienesa.',
-    price: 9000,
-    imageUrl: 'https://images.pexels.com/photos/8246342/pexels-photo-8246342.jpeg?auto=compress&cs=tinysrgb&w=600',
+    name: 'Canapés Premium',
+    description: 'Elegantes bocadillos con combinaciones de sabores gourmet.',
+    longDescription: 'Eleva tu evento con nuestros canapés premium. Bases crujientes con toppings como salmón ahumado con queso crema, palmitos con salsa golf y champiñones al ajillo.',
+    price: 20000,
+    imageUrl: 'https://images.pexels.com/photos/5638732/pexels-photo-5638732.jpeg?auto=compress&cs=tinysrgb&w=600',
     inStock: true,
     category: 'salado',
     priceTiers: [
-      { quantity: 25, price: 9000, label: '25 unidades' },
-      { quantity: 50, price: 14000, label: '50 unidades' },
-      { quantity: 100, price: 23000, label: '100 unidades' },
-    ],
-    availableCustomizations: []
-  },
-  {
-    id: 16,
-    name: 'Canapés Surtidos',
-    description: 'Elegantes bocadillos con una variedad de pastas y decoraciones frescas.',
-    longDescription: 'Una selección de canapés premium, ideales para recepciones y cócteles. Elige entre nuestras deliciosas variedades (2 para 50 uds, 3 para 100 uds) y especifícalas en las "Instrucciones Especiales" del carrito.',
-    price: 16000,
-    imageUrl: 'https://images.pexels.com/photos/6604169/pexels-photo-6604169.jpeg?auto=compress&cs=tinysrgb&w=600',
-    inStock: true,
-    category: 'salado',
-    priceTiers: [
-      { quantity: 50, price: 16000, label: '50 unidades (2 variedades)' },
-      { quantity: 100, price: 28000, label: '100 unidades (3 variedades)' },
-    ],
-    availableCustomizations: []
-  },
-  {
-    id: 17,
-    name: 'Cajita 50 Mini Pastelitos Surtidos',
-    description: 'Una selección variada de nuestros mejores mini pastelitos.',
-    longDescription: 'Disfruta de una caja con 50 de nuestros más populares mini pastelitos, incluyendo mini cupcakes, mini donas, pie de limón y tartaletas. Ideal para compartir en cualquier ocasión.',
-    price: 10000,
-    imageUrl: 'https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg?auto=compress&cs=tinysrgb&w=600',
-    inStock: true,
-    isFeatured: true,
-    category: 'promocion',
-    priceTiers: [
-      { quantity: 50, price: 10000, label: '50 mini pastelitos' }
-    ],
-    availableCustomizations: []
-  },
-  {
-    id: 18,
-    name: 'Ciento Dulce (4 Variedades)',
-    description: '100 delicias dulces con 4 variedades a elegir.',
-    longDescription: 'Arma tu caja perfecta con 100 unidades, eligiendo 4 variedades de nuestra selección dulce: mini cupcakes, mini donas, mini pie de limón y mini tartaletas.',
-    price: 18000,
-    imageUrl: 'https://images.pexels.com/photos/2144112/pexels-photo-2144112.jpeg?auto=compress&cs=tinysrgb&w=600',
-    inStock: true,
-    isFeatured: true,
-    category: 'promocion',
-    priceTiers: [
-      { quantity: 100, price: 18000, label: '100 unidades (4 variedades)' }
-    ],
-    availableCustomizations: []
-  },
-  {
-    id: 19,
-    name: 'Cajita Mixta Salada',
-    description: 'Un surtido de nuestros mejores bocados salados.',
-    longDescription: 'Una deliciosa selección de bocados salados que incluye canapés, mini empanadas de queso, chaparritas, mini pizza y mini tacitas de choclo. Perfecto para cualquier cóctel o reunión.',
-    price: 15000,
-    imageUrl: 'https://images.pexels.com/photos/6604169/pexels-photo-6604169.jpeg?auto=compress&cs=tinysrgb&w=600',
-    inStock: true,
-    isFeatured: false,
-    category: 'salado',
-    priceTiers: [
-      { quantity: 50, price: 15000, label: '50 unidades' },
-      { quantity: 100, price: 25000, label: '100 unidades' }
+        { quantity: 50, price: 20000, label: '50 unidades' },
+        { quantity: 100, price: 35000, label: '100 unidades' }
     ],
     availableCustomizations: []
   },
   {
     id: 20,
-    name: 'Promo 4: 100 Salados a Elección',
-    description: 'Elige 4 o 5 variedades y arma tu caja salada perfecta con 100 unidades.',
-    longDescription: 'Crea tu combinación ideal para cualquier evento con 100 bocados salados. Puedes elegir entre 4 y 5 de nuestras deliciosas variedades. Indica tus preferidas en las "Instrucciones Especiales" del carrito.',
-    price: 40000,
-    imageUrl: 'https://images.pexels.com/photos/14737299/pexels-photo-14737299.jpeg?auto=compress&cs=tinysrgb&w=600',
+    name: 'Promo Salada: Arma tu Bandeja',
+    description: 'Elige 4 variedades de nuestros bocados salados y crea tu surtido perfecto.',
+    longDescription: 'Personaliza tu cóctel con nuestra promoción salada. Elige 4 de tus productos favoritos y nosotros preparamos una bandeja surtida de 100 unidades para tu evento.',
+    price: 32000,
+    imageUrl: 'https://images.pexels.com/photos/262959/pexels-photo-262959.jpeg?auto=compress&cs=tinysrgb&w=600',
     inStock: true,
-    isFeatured: true,
     category: 'promocion',
     priceTiers: [
-      { quantity: 100, price: 40000, label: '100 unidades (4-5 variedades)' }
+        { quantity: 100, price: 32000, label: '100 unidades a elección' }
     ],
     selectableProducts: {
-      maxSelections: 5,
-      productIds: [11, 12, 13, 15, 16, 23] // Mini Empanada Queso, Tapaditos, Mini Pizza, Chaparritas, Canapes, Empanada Jamón Queso
+      maxSelections: 4,
+      productIds: [11, 12, 13, 14] // Empanadas, Tapaditos, Chaparritas, Canapés
     }
   },
   {
     id: 21,
-    name: 'Mini Tacitas Manjar Nuez',
-    description: 'Pequeñas tacitas de masa crujiente rellenas de manjar y nuez.',
-    longDescription: 'Un bocado clásico y delicioso. La combinación perfecta de una base de galleta, un relleno cremoso de manjar y el toque crujiente de la nuez.',
-    price: 8000,
-    imageUrl: 'https://placehold.co/400x300?text=Tacitas',
+    name: 'Tacitas de Cóctel',
+    description: 'Pequeñas masitas rellenas con crema pastelera y decoradas con frutas.',
+    longDescription: 'Un clásico de la repostería chilena en formato de cóctel. Pequeñas y delicadas masitas horneadas, rellenas de suave crema pastelera y coronadas con una fruta de la estación.',
+    price: 12000,
+    imageUrl: 'https://images.pexels.com/photos/1854037/pexels-photo-1854037.jpeg?auto=compress&cs=tinysrgb&w=600',
     inStock: true,
     category: 'dulce',
-    priceTiers: [{ quantity: 30, price: 8000, label: '30 unidades' }],
+    priceTiers: [
+        { quantity: 40, price: 12000, label: '40 unidades' },
+        { quantity: 80, price: 20000, label: '80 unidades' }
+    ],
     availableCustomizations: []
   },
   {
     id: 22,
-    name: 'Mini Cachitos',
-    description: 'Tradicionales cachitos de masa de hoja rellenos de manjar.',
-    longDescription: 'Disfruta de la textura hojaldrada y el dulce relleno de manjar de nuestros mini cachitos, espolvoreados con azúcar flor.',
+    name: 'Cachitos de Hojaldre',
+    description: 'Crujientes cachitos de hojaldre rellenos de manjar (dulce de leche).',
+    longDescription: 'Una delicia tradicional que no puede faltar. Crujiente masa de hojaldre horneada a la perfección y rellena generosamente con el más cremoso manjar casero.',
     price: 8000,
-    imageUrl: 'https://placehold.co/400x300?text=Cachitos',
+    imageUrl: 'https://images.pexels.com/photos/827513/pexels-photo-827513.jpeg?auto=compress&cs=tinysrgb&w=600',
     inStock: true,
     category: 'dulce',
-    priceTiers: [{ quantity: 30, price: 8000, label: '30 unidades' }],
-    availableCustomizations: []
-  },
-  {
-    id: 23,
-    name: 'Mini Empanada Jamón Queso',
-    description: 'Deliciosas empanaditas horneadas rellenas de jamón y queso.',
-    longDescription: 'El complemento perfecto para nuestras empanadas de queso. Un clásico relleno de jamón y queso derretido en una masa crujiente.',
-    price: 18000,
-    imageUrl: 'https://placehold.co/400x300?text=Empanada+JQ',
-    inStock: true,
-    category: 'salado',
     priceTiers: [
-      { quantity: 50, price: 18000, label: '50 unidades' },
-      { quantity: 100, price: 32000, label: '100 unidades' }
+        { quantity: 30, price: 8000, label: '30 unidades' },
+        { quantity: 60, price: 15000, label: '60 unidades' }
     ],
     availableCustomizations: []
   }
 ];
 
 export const INITIAL_CUSTOMIZATION_OPTIONS: CustomizationCollection = {
-    flavors: ['Surtidos', 'Vainilla', 'Chocolate', 'Red Velvet', 'Limón', 'Naranja'],
-    fillings: ['Surtidos', 'Crema Pastelera', 'Dulce de Leche', 'Ganache de Chocolate', 'Nata Montada'],
-    colors: ['Surtidos', 'Rosado Pastel', 'Azul Cielo', 'Blanco Clásico', 'Dorado Brillante', 'Multicolor'],
+    flavors: ['Surtidos', 'Vainilla', 'Chocolate', 'Red Velvet'],
+    fillings: ['Surtidos', 'Crema Pastelera', 'Dulce de Leche', 'Ganache de Chocolate'],
+    colors: ['Surtidos', 'Rosado Pastel', 'Azul Cielo', 'Blanco Clásico'],
 };

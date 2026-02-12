@@ -210,6 +210,12 @@ const AdminPage: React.FC<AdminPageProps> = ({
                             <h3 className="text-2xl font-serif font-bold text-cocoa-brown">Productos</h3>
                             <button onClick={() => setEditingProduct(emptyProduct)} className="bg-rose-gold text-cocoa-brown font-bold py-2 px-4 rounded-lg hover:bg-muted-mauve hover:text-white">Añadir Nuevo Producto</button>
                         </div>
+                        <div className="bg-rose-gold/20 border-l-4 border-rose-gold text-cocoa-brown/80 p-4 mb-4 rounded-r-lg">
+                            <p className="font-bold">¿Cómo crear una Caja Promocional?</p>
+                            <p className="text-sm mt-1">1. Añade o edita un producto.</p>
+                            <p className="text-sm">2. Selecciona la categoría <strong>"Promoción"</strong>.</p>
+                            <p className="text-sm">3. Aparecerá el <strong>"Configurador de Caja"</strong> para que elijas qué productos incluir y cuántos puede seleccionar el cliente.</p>
+                        </div>
                         <div className="space-y-2">
                             {products.map(product => (
                                 <div key={product.id} className="flex items-center justify-between p-3 bg-cream/50 rounded-md">
@@ -225,7 +231,8 @@ const AdminPage: React.FC<AdminPageProps> = ({
                 )}
                 {activeTab === 'options' && currentUserRole === 'superadmin' && (
                      <div className="bg-white p-6 rounded-lg shadow-lg">
-                        <h3 className="text-2xl font-serif font-bold text-cocoa-brown mb-4">Opciones de Personalización</h3>
+                        <h3 className="text-2xl font-serif font-bold text-cocoa-brown mb-1">Opciones de Personalización</h3>
+                        <p className="text-sm text-muted-mauve mb-4">Gestiona los sabores, rellenos y colores disponibles para los productos individuales (no promociones).</p>
                         <div className="grid md:grid-cols-3 gap-6">
                             <OptionManager title="Sabores" category="flavors" options={customizationOptions.flavors} newOptionValue={newOptions.flavors} onNewOptionChange={e => setNewOptions(p => ({...p, flavors: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
                             <OptionManager title="Rellenos" category="fillings" options={customizationOptions.fillings} newOptionValue={newOptions.fillings} onNewOptionChange={e => setNewOptions(p => ({...p, fillings: e.target.value}))} onAdd={handleAddOption} onDelete={handleDeleteOption} />
