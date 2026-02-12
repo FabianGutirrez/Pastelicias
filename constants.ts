@@ -254,6 +254,52 @@ export const INITIAL_PRODUCTS: Product[] = [
       { quantity: 100, price: 28000, label: '100 unidades (3 variedades)' },
     ],
     availableCustomizations: []
+  },
+  {
+    id: 17,
+    name: 'Cajita 50 Mini Pastelitos Surtidos',
+    description: 'Una selección variada de nuestros mejores mini pastelitos.',
+    longDescription: 'Disfruta de una caja con 50 de nuestros más populares mini pastelitos, incluyendo mini cupcakes, mini donas, pie de limón y tartaletas. Ideal para compartir en cualquier ocasión.',
+    price: 10000,
+    imageUrl: 'https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg?auto=compress&cs=tinysrgb&w=600',
+    inStock: true,
+    isFeatured: true,
+    category: 'promocion',
+    priceTiers: [
+      { quantity: 50, price: 10000, label: '50 mini pastelitos' }
+    ],
+    availableCustomizations: []
+  },
+  {
+    id: 18,
+    name: 'Ciento Dulce (4 Variedades)',
+    description: '100 delicias dulces con 4 variedades a elegir.',
+    longDescription: 'Arma tu caja perfecta con 100 unidades, eligiendo 4 variedades de nuestra selección dulce: mini cupcakes, mini donas, mini pie de limón y mini tartaletas.',
+    price: 18000,
+    imageUrl: 'https://images.pexels.com/photos/2144112/pexels-photo-2144112.jpeg?auto=compress&cs=tinysrgb&w=600',
+    inStock: true,
+    isFeatured: true,
+    category: 'promocion',
+    priceTiers: [
+      { quantity: 100, price: 18000, label: '100 unidades (4 variedades)' }
+    ],
+    availableCustomizations: []
+  },
+  {
+    id: 19,
+    name: 'Cajita Mixta Salada',
+    description: 'Un surtido de nuestros mejores bocados salados.',
+    longDescription: 'Una deliciosa selección de bocados salados que incluye canapés, mini empanadas de queso, chaparritas, mini pizza y mini tacitas de choclo. Perfecto para cualquier cóctel o reunión.',
+    price: 15000,
+    imageUrl: 'https://images.pexels.com/photos/6604169/pexels-photo-6604169.jpeg?auto=compress&cs=tinysrgb&w=600',
+    inStock: true,
+    isFeatured: false,
+    category: 'salado',
+    priceTiers: [
+      { quantity: 50, price: 15000, label: '50 unidades' },
+      { quantity: 100, price: 25000, label: '100 unidades' }
+    ],
+    availableCustomizations: []
   }
 ];
 
