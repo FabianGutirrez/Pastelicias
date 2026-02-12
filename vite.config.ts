@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         // Esto corrige el error de "módulo no encontrado" al usar @/
-        '@': path.resolve(__dirname, './src'),
+        '@': path.resolve(__dirname, './'),
       },
     },
     define: {
