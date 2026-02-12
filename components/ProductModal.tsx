@@ -69,15 +69,15 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
                     <form onSubmit={handleSubmit}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
-                                <img src={product.imageUrl} alt={product.name} className="w-full h-auto object-cover rounded-lg shadow-md" />
+                                <img src={product.imageUrl} alt={product.name} className="w-full h-64 sm:h-80 md:h-full object-cover rounded-lg shadow-md" />
                             </div>
                             <div className="flex flex-col">
-                                <h2 id="modal-title" className="text-3xl font-serif font-bold text-cocoa-brown mb-2">{product.name}</h2>
+                                <h2 id="modal-title" className="text-2xl md:text-3xl font-serif font-bold text-cocoa-brown mb-2">{product.name}</h2>
                                 <p className="text-gray-600 mb-6">{product.longDescription}</p>
 
                                 <div className="mb-6">
                                     <label className="block text-sm font-medium text-cocoa-brown mb-2">Elige la Cantidad</label>
-                                    <div className="grid grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         {product.priceTiers.map(tier => (
                                             <label key={tier.quantity} className="flex items-center justify-between p-3 border border-blush-pink rounded-md cursor-pointer hover:bg-blush-pink/50 transition-colors has-[:checked]:bg-blush-pink has-[:checked]:border-rose-gold has-[:checked]:ring-2 has-[:checked]:ring-rose-gold/50">
                                                 <div className="flex items-center">
