@@ -15,6 +15,10 @@ export interface Product {
     label: string;
   }[];
   availableCustomizations?: ('flavors' | 'fillings' | 'colors')[];
+  selectableProducts?: {
+    productIds: number[];
+    maxSelections: number;
+  };
 }
 
 export interface CustomizationOptions {
@@ -33,6 +37,7 @@ export interface CartItem {
     label: string;
   };
   customizations: CustomizationOptions;
+  selectedSubProducts?: string[];
 }
 
 export interface CustomizationCollection {

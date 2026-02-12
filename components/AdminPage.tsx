@@ -29,6 +29,7 @@ const emptyProduct: Omit<Product, 'id'> = {
     isFeatured: false,
     priceTiers: [{ quantity: 0, price: 0, label: '' }],
     availableCustomizations: [],
+    selectableProducts: { productIds: [], maxSelections: 0 },
 };
 
 type AdminTab = 'analytics' | 'products' | 'options' | 'settings';
@@ -54,7 +55,10 @@ const AdminPage: React.FC<AdminPageProps> = ({
 
     useEffect(() => {
         if (editingProduct) {
-            setFormState(editingProduct);
+            setFormState({
+                ...editingProduct,
+                selectableProducts: editingProduct.selectableProducts || { productIds: [], maxSelections: 0 }
+            });
         } else {
             setFormState(emptyProduct);
         }
@@ -83,13 +87,24 @@ const AdminPage: React.FC<AdminPageProps> = ({
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         
-        if (type === 'checkbox') {
+        if (name === 'maxSelections') {
+            setFormState(prev => ({ ...prev, selectableProducts: { ...prev.selectableProducts!, maxSelections: parseInt(value, 10) || 0 }}));
+        } else if (type === 'checkbox') {
             const { checked } = e.target as HTMLInputElement;
             setFormState(prev => ({ ...prev, [name]: checked }));
         } else {
             setFormState(prev => ({ ...prev, [name]: value }));
         }
     };
+    
+    const handleSelectableProductToggle = (productId: number) => {
+        const currentIds = formState.selectableProducts?.productIds || [];
+        const newIds = currentIds.includes(productId)
+            ? currentIds.filter(id => id !== productId)
+            : [...currentIds, productId];
+        setFormState(prev => ({ ...prev, selectableProducts: { ...prev.selectableProducts!, productIds: newIds }}));
+    };
+
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -133,10 +148,15 @@ const AdminPage: React.FC<AdminPageProps> = ({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if ('id' in formState) {
-            onUpdateProduct(formState as Product);
+        const finalProductData = { ...formState };
+        if (finalProductData.category !== 'promocion' || !finalProductData.selectableProducts?.productIds.length) {
+             delete finalProductData.selectableProducts;
+        }
+
+        if ('id' in finalProductData) {
+            onUpdateProduct(finalProductData as Product);
         } else {
-            onAddProduct(formState);
+            onAddProduct(finalProductData);
         }
         setEditingProduct(null);
     };
@@ -285,6 +305,27 @@ const AdminPage: React.FC<AdminPageProps> = ({
                                    <AdminCheckbox label="Colores" name="colors" checked={formState.availableCustomizations?.includes('colors') || false} onChange={() => handleCustomizationToggle('colors')} />
                                 </div>
                             </div>
+                            
+                            {formState.category === 'promocion' && (
+                                <div className="p-4 border-2 border-dashed border-rose-gold rounded-lg space-y-4">
+                                    <h4 className="font-bold font-serif text-cocoa-brown">Configurador de Caja Promocional</h4>
+                                    <AdminInput label="Número de variedades a elegir" name="maxSelections" type="number" value={formState.selectableProducts?.maxSelections || 0} onChange={handleFormChange}/>
+                                    <div>
+                                        <label className="block text-sm font-medium text-cocoa-brown mb-2">Productos disponibles para esta caja:</label>
+                                        <div className="max-h-48 overflow-y-auto space-y-1 p-2 border border-blush-pink rounded-md bg-white">
+                                            {products.filter(p => 'id' in formState ? p.id !== formState.id : true).map(p => (
+                                                <AdminCheckbox 
+                                                    key={p.id}
+                                                    label={`${p.name} (${p.category})`}
+                                                    name={`selectable-${p.id}`}
+                                                    checked={formState.selectableProducts?.productIds.includes(p.id) || false}
+                                                    onChange={() => handleSelectableProductToggle(p.id)}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             <div>
                                 <label className="block text-sm font-medium text-cocoa-brown mb-2">Paquetes de Precios</label>
@@ -344,7 +385,7 @@ const AdminTextarea: React.FC<any> = ({ label, ...props }) => (
     </div>
 );
 const AdminCheckbox: React.FC<any> = ({ label, ...props }) => (
-    <label className="flex items-center gap-2">
+    <label className="flex items-center gap-2 p-1">
         <input type="checkbox" {...props} className="h-4 w-4 rounded border-blush-pink text-rose-gold focus:ring-rose-gold"/>
         <span className="text-sm font-medium text-cocoa-brown">{label}</span>
     </label>

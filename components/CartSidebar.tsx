@@ -175,6 +175,14 @@ const CartItemCard: React.FC<{item: CartItem; onRemoveItem: (itemId: string) => 
                     {item.customizations.color && <p>Color: {item.customizations.color}</p>}
                     {item.customizations.message && <p>Mensaje: "{item.customizations.message}"</p>}
                 </div>
+                {item.selectedSubProducts && item.selectedSubProducts.length > 0 && (
+                    <div className="mt-2">
+                        <p className="text-xs font-bold text-cocoa-brown">Tu selección:</p>
+                        <ul className="list-disc list-inside text-xs text-gray-600">
+                            {item.selectedSubProducts.map(name => <li key={name}>{name}</li>)}
+                        </ul>
+                    </div>
+                )}
                  <div className="text-right mt-2">
                      <span className="font-bold text-lg text-cocoa-brown">${item.selectedTier.price.toLocaleString('es-CL')}</span>
                 </div>

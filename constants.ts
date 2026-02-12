@@ -161,7 +161,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     priceTiers: [
         { quantity: 100, price: 30000, label: '100 unidades a elección' }
     ],
-    availableCustomizations: []
+    selectableProducts: {
+      maxSelections: 5,
+      productIds: [2, 3, 4, 5, 6, 7, 21, 22] // Mini Donas, Cakepops, Mashpops, Mini Pie, Mini Tartaletas, Mini Berlines, etc.
+    }
   },
   {
     id: 11,
@@ -313,6 +316,48 @@ export const INITIAL_PRODUCTS: Product[] = [
     category: 'promocion',
     priceTiers: [
       { quantity: 100, price: 40000, label: '100 unidades (4-5 variedades)' }
+    ],
+    selectableProducts: {
+      maxSelections: 5,
+      productIds: [11, 12, 13, 15, 16, 23] // Mini Empanada Queso, Tapaditos, Mini Pizza, Chaparritas, Canapes, Empanada Jamón Queso
+    }
+  },
+  {
+    id: 21,
+    name: 'Mini Tacitas Manjar Nuez',
+    description: 'Pequeñas tacitas de masa crujiente rellenas de manjar y nuez.',
+    longDescription: 'Un bocado clásico y delicioso. La combinación perfecta de una base de galleta, un relleno cremoso de manjar y el toque crujiente de la nuez.',
+    price: 8000,
+    imageUrl: 'https://placehold.co/400x300?text=Tacitas',
+    inStock: true,
+    category: 'dulce',
+    priceTiers: [{ quantity: 30, price: 8000, label: '30 unidades' }],
+    availableCustomizations: []
+  },
+  {
+    id: 22,
+    name: 'Mini Cachitos',
+    description: 'Tradicionales cachitos de masa de hoja rellenos de manjar.',
+    longDescription: 'Disfruta de la textura hojaldrada y el dulce relleno de manjar de nuestros mini cachitos, espolvoreados con azúcar flor.',
+    price: 8000,
+    imageUrl: 'https://placehold.co/400x300?text=Cachitos',
+    inStock: true,
+    category: 'dulce',
+    priceTiers: [{ quantity: 30, price: 8000, label: '30 unidades' }],
+    availableCustomizations: []
+  },
+  {
+    id: 23,
+    name: 'Mini Empanada Jamón Queso',
+    description: 'Deliciosas empanaditas horneadas rellenas de jamón y queso.',
+    longDescription: 'El complemento perfecto para nuestras empanadas de queso. Un clásico relleno de jamón y queso derretido en una masa crujiente.',
+    price: 18000,
+    imageUrl: 'https://placehold.co/400x300?text=Empanada+JQ',
+    inStock: true,
+    category: 'salado',
+    priceTiers: [
+      { quantity: 50, price: 18000, label: '50 unidades' },
+      { quantity: 100, price: 32000, label: '100 unidades' }
     ],
     availableCustomizations: []
   }

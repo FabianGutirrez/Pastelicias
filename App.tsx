@@ -13,7 +13,7 @@ import LoginScreen from './components/LoginScreen';
 import { InstagramIcon } from './components/icons/InstagramIcon';
 import { FacebookIcon } from './components/icons/FacebookIcon';
 import { WhatsappIcon } from './components/icons/WhatsappIcon';
-import { logoBase64 } from './assets/logo.ts';
+import { logoBase64 } from './assets/logo';
 
 // Simple ID generator to ensure uniqueness during the session
 let lastId = INITIAL_PRODUCTS.reduce((max, p) => Math.max(max, p.id), 0);
@@ -87,10 +87,13 @@ const App: React.FC = () => {
     const handleCloseModal = () => setSelectedProduct(null);
     const handleToggleCart = () => setIsCartOpen(prev => !prev);
 
-    const handleAddToCart = (product: Product, selectedTier: { quantity: number; price: number; label: string; }, customizations: CustomizationOptions) => {
+    const handleAddToCart = (product: Product, selectedTier: { quantity: number; price: number; label: string; }, customizations: CustomizationOptions, selectedSubProducts?: string[]) => {
         const newItem: CartItem = {
             id: `${product.id}-${selectedTier.quantity}-${Date.now()}`,
-            product, selectedTier, customizations
+            product, 
+            selectedTier, 
+            customizations,
+            selectedSubProducts
         };
         logAnalyticsEvent({ type: 'addToCart', productId: product.id });
         setCartItems(prevItems => [...prevItems, newItem]);
@@ -220,6 +223,7 @@ const App: React.FC = () => {
             {selectedProduct && (
                 <ProductModal 
                     product={selectedProduct} 
+                    allProducts={products}
                     onClose={handleCloseModal}
                     onAddToCart={handleAddToCart}
                     customizationOptions={customizationOptions}
