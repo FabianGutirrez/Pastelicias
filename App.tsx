@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Product, CartItem, CustomizationOptions, CustomizationCollection, UserRole, AnalyticsEvent } from './types';
+import { Product, CartItem, CustomizationOptions, CustomizationCollection, UserRole, AnalyticsEvent, OrderDetails } from './types';
 import { INITIAL_PRODUCTS, INITIAL_CUSTOMIZATION_OPTIONS } from './constants';
 import Header from './components/Header';
 import ProductModal from './components/ProductModal';
@@ -10,6 +10,7 @@ import CatalogPage from './components/CatalogPage';
 import AdminPage from './components/AdminPage';
 import ContactPage from './components/ContactPage';
 import LoginScreen from './components/LoginScreen';
+import ConfirmationPage from './components/ConfirmationPage';
 import { InstagramIcon } from './components/icons/InstagramIcon';
 import { FacebookIcon } from './components/icons/FacebookIcon';
 import { WhatsappIcon } from './components/icons/WhatsappIcon';
@@ -28,6 +29,7 @@ const App: React.FC = () => {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [page, setPage] = useState(window.location.hash || '#');
     const [siteLogo, setSiteLogo] = useState<string>(logoBase64);
+    const [confirmedOrder, setConfirmedOrder] = useState<OrderDetails | null>(null);
     
     // Default role is 'customer'. Login is only for admin roles.
     const [currentUserRole, setCurrentUserRole] = useState<UserRole>('customer');
@@ -104,11 +106,12 @@ const App: React.FC = () => {
         setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
     };
 
-    const handleConfirmOrder = (confirmedItems: CartItem[], orderTotal: number) => {
-        logAnalyticsEvent({ type: 'order', items: confirmedItems, total: orderTotal });
-        alert('¡Pedido Confirmado! Gracias por tu compra. (Esto es una simulación)');
+    const handleConfirmOrder = (orderDetails: OrderDetails) => {
+        logAnalyticsEvent({ type: 'order', items: orderDetails.items, total: orderDetails.total });
+        setConfirmedOrder(orderDetails);
         setCartItems([]);
         setIsCartOpen(false);
+        window.location.hash = '#confirmation';
     };
 
     const cartItemCount = useMemo(() => {
@@ -143,6 +146,8 @@ const App: React.FC = () => {
                 return <CatalogPage products={products} onCustomizeClick={handleSelectProduct} />;
             case '#contact':
                 return <ContactPage />;
+            case '#confirmation':
+                return <ConfirmationPage orderDetails={confirmedOrder} />;
             case '#admin':
                 return <AdminPage 
                             products={products}

@@ -55,3 +55,15 @@ export interface AnalyticsEvent {
     items?: CartItem[];
     total?: number;
 }
+
+export interface OrderDetails {
+    items: CartItem[];
+    total: number;
+    customerName: string;
+    customerPhone: string;
+    deliveryType: 'pickup' | 'delivery';
+    deliveryDate: string;
+    specialInstructions: string;
+    shippingCost: number;
+    subtotal: number;
+}
