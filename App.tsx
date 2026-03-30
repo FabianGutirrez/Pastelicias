@@ -43,8 +43,8 @@ const App: React.FC = () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.user) {
                 // In a real app, you'd fetch the role from a 'profiles' table.
-                // For this prototype, we'll check user_metadata or just assume admin if logged in.
-                const role = (session.user.user_metadata?.role as UserRole) || 'admin';
+                // For this prototype, we'll check user_metadata.
+                const role = (session.user.user_metadata?.role as UserRole) || 'customer';
                 setCurrentUserRole(role);
                 if (session.user.user_metadata?.siteLogo) {
                     setSiteLogo(session.user.user_metadata.siteLogo);
@@ -60,7 +60,7 @@ const App: React.FC = () => {
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             if (session?.user) {
-                const role = (session.user.user_metadata?.role as UserRole) || 'admin';
+                const role = (session.user.user_metadata?.role as UserRole) || 'customer';
                 setCurrentUserRole(role);
             } else {
                 setCurrentUserRole('customer');
@@ -168,9 +168,13 @@ const App: React.FC = () => {
     };
 
     const renderPage = () => {
-        if (page === '#admin' && currentUserRole === 'customer') {
-             // Redirect to home if a customer tries to access admin page
-            return <HomePage products={featuredProducts} onCustomizeClick={handleSelectProduct} />;
+        // Access Control: Only admin and superadmin can access #admin
+        if (page === '#admin') {
+            if (currentUserRole === 'customer') {
+                // If not logged in or role is customer, redirect to login
+                window.location.hash = '#login';
+                return <LoginScreen onLogin={handleLogin} />;
+            }
         }
         
         switch (page) {

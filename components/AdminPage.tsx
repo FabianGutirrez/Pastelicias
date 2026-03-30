@@ -79,7 +79,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
         }
     };
 
-    const uploadImage = async (file: File, bucket: string = 'images'): Promise<string | null> => {
+    const uploadImage = async (file: File, bucket: string = 'images'): Promise<{ url: string | null; error: any }> => {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
         const filePath = `${fileName}`;
@@ -90,27 +90,33 @@ const AdminPage: React.FC<AdminPageProps> = ({
 
         if (uploadError) {
             console.error('Error uploading image:', uploadError);
-            return null;
+            return { url: null, error: uploadError };
         }
 
         const { data } = supabase.storage
             .from(bucket)
             .getPublicUrl(filePath);
 
-        return data.publicUrl;
+        return { url: data.publicUrl, error: null };
     };
 
     const handleSaveLogo = async () => {
         if (logoFile) {
             setIsUploading(true);
-            const publicUrl = await uploadImage(logoFile);
+            const { url: publicUrl, error } = await uploadImage(logoFile);
             if (publicUrl) {
                 onUpdateLogo(publicUrl);
                 setNewLogoPreview(null);
                 setLogoFile(null);
-                alert('Logo actualizado y guardado en Supabase.');
+                alert('¡Éxito! El logo se ha actualizado correctamente.');
             } else {
-                alert('Error al subir el logo. Asegúrate de que el bucket "images" existe y es público.');
+                let message = 'Error al subir el logo.';
+                if (error?.message?.includes('bucket not found') || error?.status === 404) {
+                    message += '\n\nSugerencia: El bucket "images" no existe en tu proyecto de Supabase. Por favor, créalo en la sección de Storage y asegúrate de que sea público.';
+                } else if (error?.message?.includes('row-level security') || error?.status === 403) {
+                    message += '\n\nSugerencia: Error de permisos (RLS). Asegúrate de que el bucket "images" tenga políticas que permitan la subida de archivos.';
+                }
+                alert(message);
             }
             setIsUploading(false);
         }
@@ -143,11 +149,15 @@ const AdminPage: React.FC<AdminPageProps> = ({
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             setIsUploading(true);
-            const publicUrl = await uploadImage(file);
+            const { url: publicUrl, error } = await uploadImage(file);
             if (publicUrl) {
                 setFormState(prev => ({ ...prev, imageUrl: publicUrl }));
             } else {
-                alert('Error al subir la imagen del producto.');
+                let message = 'Error al subir la imagen del producto.';
+                if (error?.message?.includes('bucket not found') || error?.status === 404) {
+                    message += '\n\nSugerencia: El bucket "images" no existe en Supabase. Créalo en Storage y hazlo público.';
+                }
+                alert(message);
             }
             setIsUploading(false);
         }
