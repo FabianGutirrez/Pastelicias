@@ -52,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({ logoUrl, onCartClick, cartItemCount, cu
     );
 
     return (
-        <header className="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-blush-pink/10 shadow-sm">
+        <header className="bg-cream/80 backdrop-blur-md sticky top-0 z-40 border-b border-blush-pink/10 shadow-sm">
             <div className="container mx-auto px-6 py-3 flex justify-between items-center">
                 <motion.a 
                     href="#" 

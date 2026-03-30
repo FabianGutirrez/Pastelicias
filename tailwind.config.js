@@ -9,13 +9,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        'cream': '#FFF7F0',
-        'blush-pink': '#FADADD', // Soft, primary pink
-        'rose-gold': '#E6C7C2', // Elegant accent for buttons and links
-        'cocoa-brown': '#5D4037', // Deep brown for text
-        'muted-mauve': '#C9A8B9', // For hover states and secondary elements
-        'dark-choco': '#5D4037', // Alias for consistency
-        'brown-sugar': '#C9A8B9', // Re-purposed for secondary actions
+        'cream': '#FFF9F5', // More creamy and warm
+        'blush-pink': '#FF85A1', // Vibrant pink
+        'rose-gold': '#E5B182', // Soft sandy gold
+        'cocoa-brown': '#4E342E', // Deep chocolate
+        'muted-mauve': '#8D6E63', // Warm brown
+        'dark-choco': '#4E342E',
+        'brown-sugar': '#B08968',
       },
       fontFamily: {
         'serif': ['Playfair Display', 'serif'],

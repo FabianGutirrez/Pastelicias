@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'motion/react';
-import { X, ShoppingBag, Check, Info, MessageSquare, ChevronRight, Package, Sliders } from 'lucide-react';
+import { X, ChevronRight } from 'lucide-react';
 import { Product, CustomizationOptions, CustomizationCollection } from '../types';
 
 interface ProductModalProps {
@@ -13,7 +13,7 @@ interface ProductModalProps {
 }
 
 const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClose, onAddToCart, customizationOptions }) => {
-    const [selectedTier, setSelectedTier] = useState(product.priceTiers[0]);
+    const [selectedTier] = useState(product.priceTiers[0]);
     const [selectedSubProductIds, setSelectedSubProductIds] = useState<number[]>([]);
     
     const [customizations, setCustomizations] = useState<CustomizationOptions>(() => {

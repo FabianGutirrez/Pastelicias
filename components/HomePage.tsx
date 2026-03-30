@@ -173,7 +173,7 @@ const HomePage: React.FC<HomePageProps> = ({ products, onCustomizeClick }) => {
 const FeatureCard: React.FC<{icon: React.ReactNode, title: string, description: string}> = ({ icon, title, description }) => (
     <motion.div 
         whileHover={{ y: -10 }}
-        className="text-center space-y-4 p-8 rounded-[2rem] bg-cream/10 border border-blush-pink/10 hover:bg-white hover:shadow-xl transition-all duration-500"
+        className="text-center space-y-4 p-8 rounded-[2rem] bg-cream/10 border border-blush-pink/10 hover:bg-cream/40 hover:shadow-xl transition-all duration-500"
     >
         <div className="w-16 h-16 bg-rose-gold/10 rounded-2xl flex items-center justify-center text-rose-gold mx-auto shadow-inner">
             {icon}

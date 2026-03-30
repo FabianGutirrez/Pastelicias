@@ -111,7 +111,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed top-0 right-0 h-full w-full max-w-md sm:max-w-lg bg-white shadow-2xl z-50 flex flex-col outline-none border-l border-white/20"
+                        className="fixed top-0 right-0 h-full w-full max-w-md sm:max-w-lg bg-cream shadow-2xl z-50 flex flex-col outline-none border-l border-white/20"
                         role="dialog"
                         aria-modal="true"
                     >
@@ -138,7 +138,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
                         <div className="flex-grow overflow-y-auto p-8 custom-scrollbar">
                             {cartItems.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
-                                    <div className="w-24 h-24 bg-cream rounded-full flex items-center justify-center text-muted-mauve/20">
+                                    <div className="w-24 h-24 bg-cream/50 rounded-full flex items-center justify-center text-muted-mauve/20">
                                         <ShoppingBag className="w-12 h-12" />
                                     </div>
                                     <div>
@@ -228,7 +228,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
 
                         {/* Footer */}
                         {cartItems.length > 0 && (
-                            <div className="p-8 border-t border-blush-pink/20 bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.05)] space-y-6">
+                            <div className="p-8 border-t border-blush-pink/20 bg-cream shadow-[0_-10px_40px_rgba(0,0,0,0.05)] space-y-6">
                                 <div className="space-y-3">
                                     <div className="flex justify-between text-muted-mauve font-medium">
                                         <span>Subtotal</span>
@@ -290,7 +290,7 @@ const CartItemCard: React.FC<{item: CartItem; onRemoveItem: (itemId: string) => 
             {item.selectedSubProducts && item.selectedSubProducts.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1">
                     {item.selectedSubProducts.map(name => (
-                        <span key={name} className="text-[9px] bg-white px-2 py-0.5 rounded-full border border-blush-pink/20 text-cocoa-brown/60">{name}</span>
+                        <span key={name} className="text-[9px] bg-cream/50 px-2 py-0.5 rounded-full border border-blush-pink/20 text-cocoa-brown/60">{name}</span>
                     ))}
                 </div>
             )}
@@ -320,7 +320,7 @@ const RadioOption: React.FC<{id: string, name: string, value: string, checked: b
         className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer border-2 transition-all duration-300 ${
             checked 
             ? 'bg-rose-gold/10 border-rose-gold shadow-sm ring-4 ring-rose-gold/5' 
-            : 'bg-white border-blush-pink/20 hover:border-blush-pink/50 hover:bg-cream/30'
+            : 'bg-cream/50 border-blush-pink/20 hover:border-blush-pink/50 hover:bg-cream/30'
         }`}
     >
         <div className="flex items-center">

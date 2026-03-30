@@ -12,7 +12,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onCustomizeClick }) 
     return (
         <motion.div 
             whileHover={{ y: -12 }}
-            className="group bg-white rounded-[2.5rem] flex flex-col border border-blush-pink/10 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.1)] hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] transition-all duration-500"
+            className="group bg-cream/30 rounded-[2.5rem] flex flex-col border border-blush-pink/10 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.1)] hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] transition-all duration-500"
         >
             {/* Image Container */}
             <div className="relative h-40 sm:h-56 overflow-hidden rounded-t-[2.5rem] flex-shrink-0">
