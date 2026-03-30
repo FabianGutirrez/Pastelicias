@@ -38,20 +38,29 @@ const App: React.FC = () => {
     const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
     useEffect(() => {
-        // Check current session
+        
+            // Dentro del useEffect principal, busca checkSession:
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
+            
+            // 1. Manejar el Rol (Esto se queda casi igual)
             if (session?.user) {
-                // In a real app, you'd fetch the role from a 'profiles' table.
-                // For this prototype, we'll check user_metadata.
                 const role = (session.user.user_metadata?.role as UserRole) || 'customer';
                 setCurrentUserRole(role);
-                if (session.user.user_metadata?.siteLogo) {
-                    setSiteLogo(session.user.user_metadata.siteLogo);
-                }
             } else {
                 setCurrentUserRole('customer');
             }
+
+            // 2. NUEVO: Cargar el logo desde la tabla pública de configuración
+            const { data: configData } = await supabase
+                .from('configuracion')
+                .select('logo_url')
+                .single();
+
+            if (configData?.logo_url) {
+                setSiteLogo(configData.logo_url);
+            }
+
             setIsLoadingAuth(false);
         };
 
@@ -70,14 +79,19 @@ const App: React.FC = () => {
         return () => subscription.unsubscribe();
     }, []);
 
-    const handleUpdateLogo = async (newLogo: string) => {
-        setSiteLogo(newLogo);
-        // Save logo URL to user metadata for persistence
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            await supabase.auth.updateUser({
-                data: { siteLogo: newLogo }
-            });
+    const handleUpdateLogo = async (newLogoUrl: string) => {
+    // Actualizamos el estado visual de inmediato
+    setSiteLogo(newLogoUrl);
+
+        // Guardamos en la tabla 'configuracion' para que sea persistente para todos
+        const { error } = await supabase
+            .from('configuracion')
+            .update({ logo_url: newLogoUrl })
+            .eq('id', 1); // Asegúrate de tener un registro con id: 1
+
+        if (error) {
+            console.error("Error al guardar el logo en la base de datos:", error.message);
+            alert("El logo se subió, pero no se pudo guardar permanentemente.");
         }
     };
 
