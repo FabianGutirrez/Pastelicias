@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Product, CustomizationCollection, AnalyticsEvent, UserRole } from '../types';
+import { supabase } from '../supabase';
 import { TrashIcon } from './icons/TrashIcon';
 import AnalyticsDashboard from './AnalyticsDashboard';
 
@@ -51,6 +52,8 @@ const AdminPage: React.FC<AdminPageProps> = ({
     const [formState, setFormState] = useState<Product | Omit<Product, 'id'>>(emptyProduct);
     const [newOptions, setNewOptions] = useState<Record<keyof CustomizationCollection, string>>({ flavors: '', fillings: '', colors: '' });
     const [newLogoPreview, setNewLogoPreview] = useState<string | null>(null);
+    const [logoFile, setLogoFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
 
     useEffect(() => {
@@ -67,6 +70,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
     const handleLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
+            setLogoFile(file);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setNewLogoPreview(reader.result as string);
@@ -75,11 +79,40 @@ const AdminPage: React.FC<AdminPageProps> = ({
         }
     };
 
-    const handleSaveLogo = () => {
-        if (newLogoPreview) {
-            onUpdateLogo(newLogoPreview);
-            setNewLogoPreview(null);
-            alert('Logo actualizado con éxito.');
+    const uploadImage = async (file: File, bucket: string = 'images'): Promise<string | null> => {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+            .from(bucket)
+            .upload(filePath, file);
+
+        if (uploadError) {
+            console.error('Error uploading image:', uploadError);
+            return null;
+        }
+
+        const { data } = supabase.storage
+            .from(bucket)
+            .getPublicUrl(filePath);
+
+        return data.publicUrl;
+    };
+
+    const handleSaveLogo = async () => {
+        if (logoFile) {
+            setIsUploading(true);
+            const publicUrl = await uploadImage(logoFile);
+            if (publicUrl) {
+                onUpdateLogo(publicUrl);
+                setNewLogoPreview(null);
+                setLogoFile(null);
+                alert('Logo actualizado y guardado en Supabase.');
+            } else {
+                alert('Error al subir el logo. Asegúrate de que el bucket "images" existe y es público.');
+            }
+            setIsUploading(false);
         }
     };
 
@@ -106,14 +139,17 @@ const AdminPage: React.FC<AdminPageProps> = ({
     };
 
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setFormState(prev => ({ ...prev, imageUrl: reader.result as string }));
-            };
-            reader.readAsDataURL(file);
+            setIsUploading(true);
+            const publicUrl = await uploadImage(file);
+            if (publicUrl) {
+                setFormState(prev => ({ ...prev, imageUrl: publicUrl }));
+            } else {
+                alert('Error al subir la imagen del producto.');
+            }
+            setIsUploading(false);
         }
     };
 
@@ -247,6 +283,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
                             {/* Logo Manager */}
                             <div>
                                 <h4 className="font-bold font-serif text-cocoa-brown mb-2">Gestionar Logo</h4>
+                                <p className="text-xs text-muted-mauve mb-2">Nota: En este prototipo, el cambio de logo solo es visible durante la sesión actual y se reiniciará al recargar la página.</p>
                                 <div className="flex flex-col sm:flex-row items-start gap-6 p-4 border border-blush-pink rounded-md">
                                     <div className="text-center">
                                         <p className="text-sm font-semibold mb-2">Logo Actual</p>
@@ -262,8 +299,8 @@ const AdminPage: React.FC<AdminPageProps> = ({
                                             </div>
                                         )}
                                     </div>
-                                    <button onClick={handleSaveLogo} disabled={!newLogoPreview} className="self-end bg-rose-gold text-cocoa-brown font-bold py-2 px-4 rounded-lg hover:bg-muted-mauve hover:text-white disabled:bg-gray-400 disabled:cursor-not-allowed">
-                                        Guardar Logo
+                                    <button onClick={handleSaveLogo} disabled={!logoFile || isUploading} className="self-end bg-rose-gold text-cocoa-brown font-bold py-2 px-4 rounded-lg hover:bg-muted-mauve hover:text-white disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                        {isUploading ? 'Subiendo...' : 'Guardar Logo'}
                                     </button>
                                 </div>
                             </div>
@@ -286,9 +323,9 @@ const AdminPage: React.FC<AdminPageProps> = ({
                                 <label className="block text-sm font-medium text-cocoa-brown mb-1">Imagen del Producto</label>
                                 <div className="flex items-center gap-4">
                                     <img src={formState.imageUrl} alt="Previsualización" className="w-24 h-24 object-cover rounded-md bg-gray-200"/>
-                                    <input id="imageUpload" type="file" accept="image/*" onChange={handleImageChange} className="hidden"/>
-                                    <label htmlFor="imageUpload" className="cursor-pointer bg-white text-cocoa-brown font-semibold py-2 px-4 border border-blush-pink rounded-lg hover:bg-blush-pink/50">
-                                        Cambiar Imagen
+                                    <input id="imageUpload" type="file" accept="image/*" onChange={handleImageChange} className="hidden" disabled={isUploading}/>
+                                    <label htmlFor="imageUpload" className={`cursor-pointer bg-white text-cocoa-brown font-semibold py-2 px-4 border border-blush-pink rounded-lg hover:bg-blush-pink/50 ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                        {isUploading ? 'Subiendo...' : 'Cambiar Imagen'}
                                     </label>
                                 </div>
                             </div>

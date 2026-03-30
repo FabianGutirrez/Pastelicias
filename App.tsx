@@ -2,6 +2,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Product, CartItem, CustomizationOptions, CustomizationCollection, UserRole, AnalyticsEvent, OrderDetails } from './types';
 import { INITIAL_PRODUCTS, INITIAL_CUSTOMIZATION_OPTIONS } from './constants';
+import { supabase } from './supabase';
 import Header from './components/Header';
 import ProductModal from './components/ProductModal';
 import CartSidebar from './components/CartSidebar';
@@ -34,28 +35,61 @@ const App: React.FC = () => {
     // Default role is 'customer'. Login is only for admin roles.
     const [currentUserRole, setCurrentUserRole] = useState<UserRole>('customer');
     const [analyticsData, setAnalyticsData] = useState<AnalyticsEvent[]>([]);
+    const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
-    // Load logo from local storage on initial render
     useEffect(() => {
-        const savedLogo = localStorage.getItem('siteLogo');
-        if (savedLogo) {
-            setSiteLogo(savedLogo);
-        }
+        // Check current session
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                // In a real app, you'd fetch the role from a 'profiles' table.
+                // For this prototype, we'll check user_metadata or just assume admin if logged in.
+                const role = (session.user.user_metadata?.role as UserRole) || 'admin';
+                setCurrentUserRole(role);
+                if (session.user.user_metadata?.siteLogo) {
+                    setSiteLogo(session.user.user_metadata.siteLogo);
+                }
+            } else {
+                setCurrentUserRole('customer');
+            }
+            setIsLoadingAuth(false);
+        };
+
+        checkSession();
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (session?.user) {
+                const role = (session.user.user_metadata?.role as UserRole) || 'admin';
+                setCurrentUserRole(role);
+            } else {
+                setCurrentUserRole('customer');
+            }
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
-    const handleUpdateLogo = (newLogo: string) => {
+    const handleUpdateLogo = async (newLogo: string) => {
         setSiteLogo(newLogo);
-        localStorage.setItem('siteLogo', newLogo);
+        // Save logo URL to user metadata for persistence
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            await supabase.auth.updateUser({
+                data: { siteLogo: newLogo }
+            });
+        }
     };
 
-    const handleLogin = (role: UserRole) => {
-        setCurrentUserRole(role);
-        window.location.hash = '#admin'; // Redirect to admin panel after login
+    const handleLogin = (_role: UserRole) => {
+        // Role is now handled by Supabase onAuthStateChanged
+        window.location.hash = '#admin'; 
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
         setCurrentUserRole('customer');
-        window.location.hash = '#'; // Redirect to home page on logout
+        window.location.hash = '#'; 
     };
 
     const logAnalyticsEvent = (event: Omit<AnalyticsEvent, 'timestamp'>) => {
@@ -167,6 +201,14 @@ const App: React.FC = () => {
                 return <HomePage products={featuredProducts} onCustomizeClick={handleSelectProduct} />;
         }
     };
+
+    if (isLoadingAuth) {
+        return (
+            <div className="min-h-screen bg-cream flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-gold"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-cream min-h-screen text-cocoa-brown flex flex-col">

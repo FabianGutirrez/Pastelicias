@@ -1,10 +1,7 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { UserRole } from '../types';
-
-// En una aplicación real, estos PINs deberían ser gestionados de forma segura en el backend.
-const ADMIN_PIN = '1234';
-const SUPERADMIN_PIN = '5678';
+import { supabase } from '../supabase';
 
 interface LoginScreenProps {
     onLogin: (role: UserRole) => void;
@@ -12,53 +9,60 @@ interface LoginScreenProps {
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
-    const [pin, setPin] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isSignUp, setIsSignUp] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const pinInputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        if (selectedRole && pinInputRef.current) {
-            pinInputRef.current.focus();
-        }
-    }, [selectedRole]);
 
     const handleRoleSelect = (role: UserRole) => {
         setSelectedRole(role);
-        setPin('');
         setError('');
     };
 
-    const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        // Permite solo números y limita la longitud a 4
-        if (/^\d*$/.test(value) && value.length <= 4) {
-            setPin(value);
-        }
-    };
-
-    const handlePinSubmit = (e: React.FormEvent) => {
+    const handleAuthSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        let isPinCorrect = false;
+        setLoading(true);
+        setError('');
 
-        if (selectedRole === 'admin' && pin === ADMIN_PIN) {
-            isPinCorrect = true;
-        } else if (selectedRole === 'superadmin' && pin === SUPERADMIN_PIN) {
-            isPinCorrect = true;
-        }
-
-        if (isPinCorrect && selectedRole) {
-            onLogin(selectedRole);
-        } else {
-            setError('PIN incorrecto. Intenta de nuevo.');
-            setPin('');
-            pinInputRef.current?.focus();
+        try {
+            if (isSignUp) {
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            role: selectedRole || 'admin'
+                        }
+                    }
+                });
+                if (error) throw error;
+                if (data.user) {
+                    alert('Registro exitoso. Por favor, revisa tu correo para confirmar (si está habilitado) o intenta iniciar sesión.');
+                    setIsSignUp(false);
+                }
+            } else {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                if (error) throw error;
+                if (data.user) {
+                    const role = (data.user.user_metadata?.role as UserRole) || 'admin';
+                    onLogin(role);
+                }
+            }
+        } catch (err: any) {
+            setError(err.message || 'Ocurrió un error durante la autenticación.');
+        } finally {
+            setLoading(false);
         }
     };
     
     const handleCancel = () => {
         setSelectedRole(null);
+        setError('');
     };
-
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-cream p-4">
@@ -88,32 +92,54 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                         </div>
                     </>
                 ) : (
-                    <form onSubmit={handlePinSubmit}>
+                    <form onSubmit={handleAuthSubmit} className="space-y-4">
                         <p className="text-muted-mauve mb-6 text-center">
-                            Ingresa el PIN de 4 dígitos para <span className="font-bold capitalize text-cocoa-brown">{selectedRole}</span>.
+                            {isSignUp ? 'Crea una cuenta para' : 'Ingresa tus credenciales para'} <span className="font-bold capitalize text-cocoa-brown">{selectedRole}</span>.
                         </p>
-                        <div className="mb-4">
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-cocoa-brown mb-1">Correo Electrónico</label>
                             <input
-                                ref={pinInputRef}
-                                type="password"
-                                value={pin}
-                                onChange={handlePinChange}
-                                maxLength={4}
-                                className="w-full text-center text-3xl tracking-[1rem] bg-cream/50 border-2 border-blush-pink rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-rose-gold"
-                                placeholder="----"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full bg-cream/50 border-2 border-blush-pink rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-rose-gold"
+                                placeholder="tu@email.com"
                                 required
-                                inputMode="numeric"
-                                pattern="[0-9]*"
                             />
                         </div>
-                        {error && <p className="text-red-500 text-sm text-center mb-4 animate-shake">{error}</p>}
-                        <div className="space-y-4">
+
+                        <div>
+                            <label className="block text-sm font-medium text-cocoa-brown mb-1">Contraseña</label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full bg-cream/50 border-2 border-blush-pink rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-rose-gold"
+                                placeholder="••••••••"
+                                required
+                            />
+                        </div>
+
+                        {error && <p className="text-red-500 text-sm text-center animate-shake">{error}</p>}
+                        
+                        <div className="space-y-4 pt-2">
                             <button
                                 type="submit"
-                                className="w-full bg-rose-gold text-cocoa-brown font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
+                                disabled={loading}
+                                className="w-full bg-rose-gold text-cocoa-brown font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 disabled:bg-gray-400 disabled:cursor-not-allowed"
                             >
-                                Confirmar
+                                {loading ? 'Procesando...' : (isSignUp ? 'Registrarse' : 'Iniciar Sesión')}
                             </button>
+                            
+                            <button
+                                type="button"
+                                onClick={() => setIsSignUp(!isSignUp)}
+                                className="w-full text-sm text-muted-mauve hover:text-cocoa-brown underline"
+                            >
+                                {isSignUp ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}
+                            </button>
+
                              <button
                                 type="button"
                                 onClick={handleCancel}
