@@ -272,7 +272,7 @@ const App: React.FC = () => {
                              <h4 className="font-bold font-serif text-cocoa-brown mb-3">Síguenos</h4>
                              <div className="flex justify-center md:justify-end space-x-4">
                                  <a href="#" className="text-cocoa-brown hover:text-muted-mauve transition-colors"><InstagramIcon /></a>
-                                 <a href="#" className="text-cocoa-brown hover:text-muted-mauve transition-colors"><FacebookIcon /></a>
+                                 <a href="https://www.facebook.com/profile.php?id=100063743610519&locale=es_LA" className="text-cocoa-brown hover:text-muted-mauve transition-colors"><FacebookIcon /></a>
                                  <a href="#" className="text-cocoa-brown hover:text-muted-mauve transition-colors"><WhatsappIcon /></a>
                              </div>
                         </div>

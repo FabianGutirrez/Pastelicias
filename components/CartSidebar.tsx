@@ -15,7 +15,7 @@ interface CartSidebarProps {
 }
 
 const DELIVERY_SHIPPING_COST = 5000;
-const YOUR_WHATSAPP_NUMBER = "56912345678"; // IMPORTANTE: Reemplazar con tu número de WhatsApp con código de país.
+const YOUR_WHATSAPP_NUMBER = "+56 9 5468 1985"; // IMPORTANTE: Reemplazar con tu número de WhatsApp con código de país.
 
 const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, onRemoveItem, onConfirmOrder, cartItemCount }) => {
     const [deliveryType, setDeliveryType] = useState<'pickup' | 'delivery'>('pickup');

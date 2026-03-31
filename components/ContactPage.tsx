@@ -31,17 +31,17 @@ const ContactPage: React.FC = () => {
                             <ContactInfoItem 
                                 icon={<MapPin className="w-6 h-6 text-rose-gold" />}
                                 title="Nuestra Ubicación"
-                                content={["Calle Ficticia 123,", "Ciudad Dulce, CP 54321"]}
+                                content={["Lago Bertrand 120, Quilpué, Valparaíso, Chile"]}
                             />
                             <ContactInfoItem 
                                 icon={<Clock className="w-6 h-6 text-rose-gold" />}
                                 title="Horario de Atención"
-                                content={["Lunes a Sábado: 9am - 8pm", "Domingo: 10am - 6pm"]}
+                                content={["todos los dias"]}
                             />
                             <ContactInfoItem 
                                 icon={<Phone className="w-6 h-6 text-rose-gold" />}
                                 title="Teléfono / WhatsApp"
-                                content={["+56 9 1234 5678"]}
+                                content={["+56 9 5468 1985"]}
                             />
                             <ContactInfoItem 
                                 icon={<Mail className="w-6 h-6 text-rose-gold" />}
@@ -52,7 +52,7 @@ const ContactPage: React.FC = () => {
 
                         <div className="relative z-10 pt-8 flex gap-4">
                             <SocialLink href="#" label="Instagram" />
-                            <SocialLink href="#" label="Facebook" />
+                            <SocialLink href="https://www.facebook.com/profile.php?id=100063743610519&locale=es_LA" label="Facebook" />
                             <SocialLink href="#" label="WhatsApp" />
                         </div>
                     </div>
@@ -62,7 +62,7 @@ const ContactPage: React.FC = () => {
                         <div className="max-w-md mx-auto lg:mx-0 space-y-8">
                             <div className="space-y-2">
                                 <h3 className="text-2xl font-serif font-bold text-cocoa-brown">Envíanos un mensaje</h3>
-                                <p className="text-muted-mauve/60 text-sm">Te responderemos en menos de 24 horas hábiles.</p>
+                                <p className="text-muted-mauve/60 text-sm">Te responderemos en menos de 24 horas.</p>
                             </div>
 
                             <form action="#" method="POST" className="space-y-6" onSubmit={(e) => {
