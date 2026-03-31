@@ -100,8 +100,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
                 </button>
 
                 {/* Left Side: Image */}
-                <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-8">
-                    <div className="w-full h-48 sm:h-64 md:h-full min-h-[180px] sm:min-h-[250px] md:min-h-[400px] overflow-hidden rounded-xl sm:rounded-2xl shadow-sm">
+                <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-8 flex-shrink-0 md:flex-shrink">
+                    <div className="w-full h-48 sm:h-64 md:h-full min-h-[150px] sm:min-h-[250px] md:min-h-[400px] overflow-hidden rounded-xl sm:rounded-2xl shadow-sm">
                         <img 
                             src={product.imageUrl} 
                             alt={product.name} 
@@ -111,9 +111,9 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
                 </div>
 
                 {/* Right Side: Content */}
-                <div className="w-full md:w-1/2 flex flex-col p-6 sm:p-8 md:pl-0 md:pr-10 md:py-10 h-full overflow-hidden">
-                    <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
-                        <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar">
+                <div className="w-full md:w-1/2 flex flex-col p-6 sm:p-8 md:pl-0 md:pr-10 md:py-10 min-h-0 overflow-hidden">
+                    <form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0 overflow-hidden">
+                        <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar min-h-0">
                             <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-cocoa-brown mb-2 sm:mb-4 leading-tight">
                                 {product.name}
                             </h2>

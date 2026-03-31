@@ -23,21 +23,65 @@ let lastId = INITIAL_PRODUCTS.reduce((max, p) => Math.max(max, p.id), 0);
 const generateUniqueId = () => ++lastId;
 
 const App: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
-    const [customizationOptions, setCustomizationOptions] = useState<CustomizationCollection>(INITIAL_CUSTOMIZATION_OPTIONS);
-    const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>(INITIAL_DELIVERY_ZONES);
+    const [products, setProducts] = useState<Product[]>(() => {
+        const saved = localStorage.getItem('pastelicias_products');
+        return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
+    });
+    const [customizationOptions, setCustomizationOptions] = useState<CustomizationCollection>(() => {
+        const saved = localStorage.getItem('pastelicias_customizations');
+        return saved ? JSON.parse(saved) : INITIAL_CUSTOMIZATION_OPTIONS;
+    });
+    const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>(() => {
+        const saved = localStorage.getItem('pastelicias_delivery_zones');
+        return saved ? JSON.parse(saved) : INITIAL_DELIVERY_ZONES;
+    });
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [cartItems, setCartItems] = useState<CartItem[]>([]);
+    const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+        const saved = localStorage.getItem('pastelicias_cart');
+        return saved ? JSON.parse(saved) : [];
+    });
+
     const [page, setPage] = useState(window.location.hash || '#');
-    const [siteLogo, setSiteLogo] = useState<string>(logoBase64);
+    const [siteLogo, setSiteLogo] = useState<string>(() => {
+        const saved = localStorage.getItem('pastelicias_logo');
+        return saved || logoBase64;
+    });
     const [confirmedOrder, setConfirmedOrder] = useState<OrderDetails | null>(null);
     
     // Default role is 'customer'. Login is only for admin roles.
     const [currentUserRole, setCurrentUserRole] = useState<UserRole>('customer');
-    const [analyticsData, setAnalyticsData] = useState<AnalyticsEvent[]>([]);
+    const [analyticsData, setAnalyticsData] = useState<AnalyticsEvent[]>(() => {
+        const saved = localStorage.getItem('pastelicias_analytics');
+        return saved ? JSON.parse(saved) : [];
+    });
     const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+
+    // Persistence Effects
+    useEffect(() => {
+        localStorage.setItem('pastelicias_products', JSON.stringify(products));
+    }, [products]);
+
+    useEffect(() => {
+        localStorage.setItem('pastelicias_customizations', JSON.stringify(customizationOptions));
+    }, [customizationOptions]);
+
+    useEffect(() => {
+        localStorage.setItem('pastelicias_delivery_zones', JSON.stringify(deliveryZones));
+    }, [deliveryZones]);
+
+    useEffect(() => {
+        localStorage.setItem('pastelicias_cart', JSON.stringify(cartItems));
+    }, [cartItems]);
+
+    useEffect(() => {
+        localStorage.setItem('pastelicias_logo', siteLogo);
+    }, [siteLogo]);
+
+    useEffect(() => {
+        localStorage.setItem('pastelicias_analytics', JSON.stringify(analyticsData));
+    }, [analyticsData]);
 
     const [toast, setToast] = useState<{ isVisible: boolean; message: string; type: ToastType }>({
         isVisible: false,
@@ -247,45 +291,56 @@ const App: React.FC = () => {
             <main className="container mx-auto px-4 py-8 flex-grow">
                 {renderPage()}
             </main>
-            <footer className="bg-blush-pink mt-16">
-                <div className="container mx-auto px-6 py-12">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* Column 1: About */}
-                        <div className="flex flex-col items-center md:items-start text-center md:text-left">
-                            <img src={siteLogo} alt="Pastelicias Logo" className="h-20 w-auto mb-4" />
-                            <p className="text-cocoa-brown/80">Repostería de diseño para tus momentos más especiales.</p>
+            <footer className="bg-cocoa-brown pt-20 pb-10 text-cream">
+                <div className="container mx-auto px-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
+                        {/* Column 1: Brand */}
+                        <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
+                            <div className="flex flex-col items-center md:items-start gap-4">
+                                <div className="w-20 h-20 bg-cream/10 backdrop-blur-md rounded-3xl p-3 border border-cream/20 shadow-2xl">
+                                    <img src={siteLogo} alt="Pastelicias Logo" className="w-full h-full object-contain" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-serif font-bold text-rose-gold tracking-tight">Pastelicias</h3>
+                                    <p className="text-xs font-bold text-cream/40 uppercase tracking-[0.2em] mt-1 italic">Endulzando tus sueños, un pastel a la vez.</p>
+                                </div>
+                            </div>
+                            <p className="text-cream/70 leading-relaxed max-w-sm">
+                                Repostería artesanal con amor y dedicación. Creamos momentos dulces e inolvidables para cada una de tus celebraciones, utilizando ingredientes de la más alta calidad.
+                            </p>
                         </div>
                         
                         {/* Column 2: Links */}
                         <div className="text-center">
-                            <h4 className="font-bold font-serif text-cocoa-brown mb-3">Navegación</h4>
-                            <nav className="flex flex-col space-y-2 text-cocoa-brown/90">
-                                <a href="#" className="hover:underline hover:text-cocoa-brown">Inicio</a>
-                                <a href="#catalog" className="hover:underline hover:text-cocoa-brown">Catálogo</a>
-                                <a href="#contact" className="hover:underline hover:text-cocoa-brown">Contacto</a>
+                            <h4 className="text-lg font-bold font-serif text-rose-gold mb-6">Navegación</h4>
+                            <nav className="flex flex-col space-y-4 text-cream/80">
+                                <a href="#" className="hover:text-rose-gold transition-colors">Inicio</a>
+                                <a href="#catalog" className="hover:text-rose-gold transition-colors">Catálogo</a>
+                                <a href="#contact" className="hover:text-rose-gold transition-colors">Contacto</a>
                             </nav>
                         </div>
 
                         {/* Column 3: Social */}
                         <div className="text-center md:text-right">
-                             <h4 className="font-bold font-serif text-cocoa-brown mb-3">Síguenos</h4>
-                             <div className="flex justify-center md:justify-end space-x-4">
-                                 <a href="#" aria-label="Instagram" className="text-cocoa-brown hover:text-muted-mauve transition-colors">
+                             <h4 className="text-lg font-bold font-serif text-rose-gold mb-6">Síguenos</h4>
+                             <div className="flex justify-center md:justify-end space-x-6">
+                                 <a href="#" aria-label="Instagram" className="w-12 h-12 bg-cream/5 rounded-2xl flex items-center justify-center text-cream hover:bg-rose-gold hover:text-cocoa-brown transition-all duration-300 border border-cream/10">
                                     <InstagramIcon />
                                  </a>
-                                 <a href="#" aria-label="Facebook" className="text-cocoa-brown hover:text-muted-mauve transition-colors">
+                                 <a href="https://www.facebook.com/profile.php?id=100063743610519&locale=es_LA" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-12 h-12 bg-cream/5 rounded-2xl flex items-center justify-center text-cream hover:bg-rose-gold hover:text-cocoa-brown transition-all duration-300 border border-cream/10">
                                     <FacebookIcon />
                                  </a>
-                                 <a href="#" aria-label="WhatsApp" className="text-cocoa-brown hover:text-muted-mauve transition-colors">
+                                 <a href="https://wa.me/56954681985" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="w-12 h-12 bg-cream/5 rounded-2xl flex items-center justify-center text-cream hover:bg-rose-gold hover:text-cocoa-brown transition-all duration-300 border border-cream/10">
                                     <WhatsappIcon />
                                  </a>
                              </div>
+                             <p className="mt-8 text-cream/40 text-xs font-medium uppercase tracking-widest">Síguenos para ver nuestras últimas creaciones</p>
                         </div>
                     </div>
 
                     {/* Bottom Bar */}
-                    <div className="mt-12 pt-8 border-t border-rose-gold/50 text-center text-cocoa-brown/70 text-sm">
-                         <p>&copy; 2024 Pastelicias. Todos los derechos reservados.</p>
+                    <div className="mt-20 pt-8 border-t border-cream/10 text-center text-cream/40 text-xs tracking-widest uppercase font-bold">
+                         <p>&copy; {new Date().getFullYear()} Pastelicias. Todos los derechos reservados.</p>
                     </div>
                 </div>
             </footer>

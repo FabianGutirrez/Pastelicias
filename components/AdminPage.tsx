@@ -372,8 +372,8 @@ const AdminPage: React.FC<AdminPageProps> = ({
                                 <p className="text-muted-mauve/60 text-xs sm:text-sm">Gestiona las zonas de despacho y sus respectivos costos.</p>
                             </div>
 
-                            <div className="bg-cream p-6 sm:p-10 rounded-[1.5rem] sm:rounded-[3rem] shadow-xl shadow-cocoa-brown/5 border border-blush-pink/10">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="bg-cream p-4 sm:p-10 rounded-[1.5rem] sm:rounded-[3rem] shadow-xl shadow-cocoa-brown/5 border border-blush-pink/10">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                     {/* Add New Zone */}
                                     <div className="space-y-6">
                                         <h4 className="text-lg font-bold text-cocoa-brown flex items-center gap-2">

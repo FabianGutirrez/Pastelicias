@@ -31,17 +31,17 @@ const ContactPage: React.FC = () => {
                             <ContactInfoItem 
                                 icon={<MapPin className="w-6 h-6 text-rose-gold" />}
                                 title="Nuestra Ubicación"
-                                content={["Calle Ficticia 123,", "Ciudad Dulce, CP 54321"]}
+                                content={["Lago Bertrand 120,", "Quilpué, Valparaíso"]}
                             />
                             <ContactInfoItem 
                                 icon={<Clock className="w-6 h-6 text-rose-gold" />}
                                 title="Horario de Atención"
-                                content={["Lunes a Sábado: 9am - 8pm", "Domingo: 10am - 6pm"]}
+                                content={["Lunes a Domingo: 24 hrs"]}
                             />
                             <ContactInfoItem 
                                 icon={<Phone className="w-6 h-6 text-rose-gold" />}
                                 title="Teléfono / WhatsApp"
-                                content={["+56 9 1234 5678"]}
+                                content={["+56 9 5468 1985"]}
                             />
                             <ContactInfoItem 
                                 icon={<Mail className="w-6 h-6 text-rose-gold" />}
