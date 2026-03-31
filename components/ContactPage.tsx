@@ -50,11 +50,7 @@ const ContactPage: React.FC = () => {
                             />
                         </div>
 
-                        <div className="relative z-10 pt-8 flex gap-4">
-                            <SocialLink href="#" label="Instagram" />
-                            <SocialLink href="#" label="Facebook" />
-                            <SocialLink href="#" label="WhatsApp" />
-                        </div>
+                        
                     </div>
 
                     {/* Contact Form */}
