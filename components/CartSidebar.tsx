@@ -15,7 +15,7 @@ interface CartSidebarProps {
 }
 
 const DELIVERY_SHIPPING_COST = 5000;
-const YOUR_WHATSAPP_NUMBER = "+56 9 50218335"; // IMPORTANTE: Reemplazar con tu número de WhatsApp con código de país.
+const YOUR_WHATSAPP_NUMBER = "56950218335"; // IMPORTANTE: Reemplazar con tu número de WhatsApp con código de país.
 
 const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, onRemoveItem, onConfirmOrder, cartItemCount }) => {
     const [deliveryType, setDeliveryType] = useState<'pickup' | 'delivery'>('pickup');
@@ -90,7 +90,8 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
 
         onConfirmOrder(orderDetails);
         
-        const whatsappUrl = `https://wa.me/${56950218335}?text=${generateWhatsAppMessage()}`;
+        // CORRECTO: Ahora sí estás "leyendo" la variable que declaraste arriba
+        const whatsappUrl = `https://wa.me/${YOUR_WHATSAPP_NUMBER}?text=${generateWhatsAppMessage()}`;
         window.open(whatsappUrl, '_blank');
     };
 
