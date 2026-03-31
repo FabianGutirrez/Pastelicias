@@ -90,7 +90,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
 
         onConfirmOrder(orderDetails);
         
-        const whatsappUrl = `https://wa.me/${YOUR_WHATSAPP_NUMBER}?text=${generateWhatsAppMessage()}`;
+        const whatsappUrl = `https://wa.me/${56950218335}?text=${generateWhatsAppMessage()}`;
         window.open(whatsappUrl, '_blank');
     };
 
