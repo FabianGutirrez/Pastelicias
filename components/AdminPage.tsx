@@ -168,6 +168,8 @@ const AdminPage: React.FC<AdminPageProps> = ({
         } else if (type === 'checkbox') {
             const { checked } = e.target as HTMLInputElement;
             setFormState(prev => ({ ...prev, [name]: checked }));
+        } else if (type === 'number' || name === 'price') {
+            setFormState(prev => ({ ...prev, [name]: Number(value) }));
         } else {
             setFormState(prev => ({ ...prev, [name]: value }));
         }
@@ -236,6 +238,28 @@ const AdminPage: React.FC<AdminPageProps> = ({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Basic validation
+        if (!formState.name.trim()) {
+            setNotification({
+                isOpen: true,
+                title: 'Error de Validación',
+                message: 'El nombre del producto es obligatorio.',
+                type: 'error'
+            });
+            return;
+        }
+
+        if (formState.price <= 0) {
+            setNotification({
+                isOpen: true,
+                title: 'Error de Validación',
+                message: 'El precio debe ser mayor a 0.',
+                type: 'error'
+            });
+            return;
+        }
+
         const finalProductData = { ...formState };
         if (finalProductData.category !== 'promocion' || !finalProductData.selectableProducts?.productIds.length) {
              delete finalProductData.selectableProducts;
@@ -649,7 +673,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
                                 </button>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="flex-grow overflow-y-auto p-6 sm:p-8 space-y-8 sm:space-y-10 custom-scrollbar">
+                            <form id="productForm" onSubmit={handleSubmit} className="flex-grow overflow-y-auto p-6 sm:p-8 space-y-8 sm:space-y-10 custom-scrollbar">
                                 {/* Basic Info Section */}
                                 <div className="space-y-4 sm:space-y-6">
                                     <h4 className="text-[10px] sm:text-xs font-bold text-rose-gold uppercase tracking-[0.2em] ml-1">Información Básica</h4>
@@ -807,11 +831,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     type="submit" 
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        const form = (e.target as HTMLElement).closest('motion.div')?.querySelector('form');
-                                        if (form) form.requestSubmit();
-                                    }}
+                                    form="productForm"
                                     className="order-1 sm:order-2 bg-cocoa-brown text-white font-bold py-3 sm:py-4 px-8 sm:px-12 rounded-xl sm:rounded-2xl hover:bg-rose-gold transition-all shadow-xl shadow-cocoa-brown/20 flex items-center justify-center gap-3"
                                 >
                                     <CheckCircle2 className="w-5 h-5" />

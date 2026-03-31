@@ -3,6 +3,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Product, CartItem, CustomizationOptions, CustomizationCollection, UserRole, AnalyticsEvent, OrderDetails, DeliveryZone } from './types';
 import { INITIAL_PRODUCTS, INITIAL_CUSTOMIZATION_OPTIONS, INITIAL_DELIVERY_ZONES } from './constants';
 import { supabase } from './supabase';
+import { motion } from 'motion/react';
 import Header from './components/Header';
 import ProductModal from './components/ProductModal';
 import CartSidebar from './components/CartSidebar';
@@ -18,23 +19,90 @@ import { FacebookIcon } from './components/icons/FacebookIcon';
 import { WhatsappIcon } from './components/icons/WhatsappIcon';
 import { logoBase64 } from './assets/logo';
 
-// Simple ID generator to ensure uniqueness during the session
-let lastId = INITIAL_PRODUCTS.reduce((max, p) => Math.max(max, p.id), 0);
-const generateUniqueId = () => ++lastId;
-
 const App: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>(() => {
-        const saved = localStorage.getItem('pastelicia_products');
-        return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-    });
-    const [customizationOptions, setCustomizationOptions] = useState<CustomizationCollection>(() => {
-        const saved = localStorage.getItem('pastelicia_customizations');
-        return saved ? JSON.parse(saved) : INITIAL_CUSTOMIZATION_OPTIONS;
-    });
-    const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>(() => {
-        const saved = localStorage.getItem('pastelicia_delivery_zones');
-        return saved ? JSON.parse(saved) : INITIAL_DELIVERY_ZONES;
-    });
+    const [products, setProducts] = useState<Product[]>([]);
+    const [customizationOptions, setCustomizationOptions] = useState<CustomizationCollection>(INITIAL_CUSTOMIZATION_OPTIONS);
+    const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
+    
+    const [isLoadingData, setIsLoadingData] = useState(true);
+
+    // Fetch data from Supabase
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoadingData(true);
+            try {
+                // Fetch Products
+                const { data: productsData, error: productsError } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('id', { ascending: true });
+                
+                if (productsError) throw productsError;
+                setProducts(productsData || INITIAL_PRODUCTS);
+
+                // Fetch Customizations
+                const { data: customizationsData, error: customizationsError } = await supabase
+                    .from('customizations')
+                    .select('*')
+                    .single();
+                
+                if (customizationsError && customizationsError.code !== 'PGRST116') throw customizationsError;
+                if (customizationsData) {
+                    setCustomizationOptions({
+                        flavors: customizationsData.flavors || [],
+                        fillings: customizationsData.fillings || [],
+                        colors: customizationsData.colors || []
+                    });
+                } else {
+                    setCustomizationOptions(INITIAL_CUSTOMIZATION_OPTIONS);
+                }
+
+                // Fetch Delivery Zones
+                const { data: zonesData, error: zonesError } = await supabase
+                    .from('delivery_zones')
+                    .select('*')
+                    .order('price', { ascending: true });
+                
+                if (zonesError) throw zonesError;
+                setDeliveryZones(zonesData || INITIAL_DELIVERY_ZONES);
+
+                // Fetch Logo from configuracion table
+                const { data: configData, error: configError } = await supabase
+                    .from('configuracion')
+                    .select('logo_url')
+                    .eq('id', 1)
+                    .single();
+                
+                if (configError && configError.code !== 'PGRST116') {
+                    console.warn('Error fetching logo from configuracion:', configError);
+                } else if (configData?.logo_url) {
+                    setSiteLogo(configData.logo_url);
+                }
+
+            } catch (error) {
+                console.error('Error fetching data from Supabase:', error);
+                // Fallback to localStorage or initial data
+                const savedProducts = localStorage.getItem('pastelicia_products');
+                setProducts(savedProducts ? JSON.parse(savedProducts) : INITIAL_PRODUCTS);
+                
+                const savedCustomizations = localStorage.getItem('pastelicia_customizations');
+                setCustomizationOptions(savedCustomizations ? JSON.parse(savedCustomizations) : INITIAL_CUSTOMIZATION_OPTIONS);
+                
+                const savedZones = localStorage.getItem('pastelicia_delivery_zones');
+                setDeliveryZones(savedZones ? JSON.parse(savedZones) : INITIAL_DELIVERY_ZONES);
+            } finally {
+                setIsLoadingData(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // Simple ID generator to ensure uniqueness during the session
+    const generateUniqueId = () => {
+        const maxId = products.length > 0 ? Math.max(...products.map(p => p.id)) : 0;
+        return maxId + 1;
+    };
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,10 +112,7 @@ const App: React.FC = () => {
     });
 
     const [page, setPage] = useState(window.location.hash || '#');
-    const [siteLogo, setSiteLogo] = useState<string>(() => {
-        const saved = localStorage.getItem('pastelicia_logo');
-        return saved || logoBase64;
-    });
+    const [siteLogo, setSiteLogo] = useState<string>(logoBase64);
     const [confirmedOrder, setConfirmedOrder] = useState<OrderDetails | null>(null);
     
     // Default role is 'customer'. Login is only for admin roles.
@@ -74,10 +139,6 @@ const App: React.FC = () => {
     useEffect(() => {
         localStorage.setItem('pastelicia_cart', JSON.stringify(cartItems));
     }, [cartItems]);
-
-    useEffect(() => {
-        localStorage.setItem('pastelicia_logo', siteLogo);
-    }, [siteLogo]);
 
     useEffect(() => {
         localStorage.setItem('pastelicia_analytics', JSON.stringify(analyticsData));
@@ -128,12 +189,17 @@ const App: React.FC = () => {
 
     const handleUpdateLogo = async (newLogo: string) => {
         setSiteLogo(newLogo);
-        // Save logo URL to user metadata for persistence
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            await supabase.auth.updateUser({
-                data: { siteLogo: newLogo }
-            });
+        
+        try {
+            const { error } = await supabase
+                .from('configuracion')
+                .upsert({ id: 1, logo_url: newLogo });
+            
+            if (error) throw error;
+            showToast('Logo actualizado con éxito', 'success');
+        } catch (error) {
+            console.error('Error updating logo in Supabase:', error);
+            showToast('Error al actualizar el logo en la nube', 'error');
         }
     };
 
@@ -212,23 +278,104 @@ const App: React.FC = () => {
     
     const featuredProducts = useMemo(() => products.filter(p => p.isFeatured), [products]);
 
-    const handleAddProduct = (product: Omit<Product, 'id'>) => {
-        setProducts(prev => [...prev, { ...product, id: generateUniqueId() }]);
+    const handleAddProduct = async (product: Omit<Product, 'id'>) => {
+        const newProduct = { ...product, id: generateUniqueId() };
+        setProducts(prev => [...prev, newProduct]);
+        
+        try {
+            const { error } = await supabase.from('products').insert([newProduct]);
+            if (error) throw error;
+            showToast('Producto añadido con éxito', 'success');
+        } catch (error) {
+            console.error('Error adding product to Supabase:', error);
+            showToast('Error al guardar en la nube, pero se guardó localmente', 'info');
+        }
     };
-    const handleUpdateProduct = (updatedProduct: Product) => {
+
+    const handleUpdateProduct = async (updatedProduct: Product) => {
         setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
+        
+        try {
+            const { error } = await supabase
+                .from('products')
+                .update(updatedProduct)
+                .eq('id', updatedProduct.id);
+            
+            if (error) throw error;
+            showToast('Producto actualizado con éxito', 'success');
+        } catch (error) {
+            console.error('Error updating product in Supabase:', error);
+            showToast('Error al actualizar en la nube', 'error');
+        }
     };
-    const handleDeleteProduct = (productId: number) => {
+
+    const handleDeleteProduct = async (productId: number) => {
         setProducts(prev => prev.filter(p => p.id !== productId));
+        
+        try {
+            const { error } = await supabase
+                .from('products')
+                .delete()
+                .eq('id', productId);
+            
+            if (error) throw error;
+            showToast('Producto eliminado con éxito', 'success');
+        } catch (error) {
+            console.error('Error deleting product from Supabase:', error);
+            showToast('Error al eliminar en la nube', 'error');
+        }
     };
-    const handleUpdateCustomizationOptions = (newOptions: CustomizationCollection) => {
+
+    const handleUpdateCustomizationOptions = async (newOptions: CustomizationCollection) => {
         setCustomizationOptions(newOptions);
+        
+        try {
+            const { error } = await supabase
+                .from('customizations')
+                .upsert({ id: 1, ...newOptions }); // Assuming a single record for customizations
+            
+            if (error) throw error;
+            showToast('Opciones actualizadas', 'success');
+        } catch (error) {
+            console.error('Error updating customizations in Supabase:', error);
+            showToast('Error al guardar opciones', 'error');
+        }
     };
-    const handleUpdateDeliveryZones = (newZones: DeliveryZone[]) => {
+
+    const handleUpdateDeliveryZones = async (newZones: DeliveryZone[]) => {
         setDeliveryZones(newZones);
+        
+        try {
+            // This is a bit more complex as we need to sync the whole list
+            // For simplicity, we'll delete all and re-insert, or use a more sophisticated sync
+            // Let's try upserting each zone
+            const { error } = await supabase
+                .from('delivery_zones')
+                .upsert(newZones);
+            
+            if (error) throw error;
+            showToast('Zonas de entrega actualizadas', 'success');
+        } catch (error) {
+            console.error('Error updating delivery zones in Supabase:', error);
+            showToast('Error al guardar zonas', 'error');
+        }
     };
 
     const renderPage = () => {
+        if (isLoadingData) {
+            return (
+                <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-4">
+                    <motion.div 
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="w-16 h-16 border-4 border-rose-gold border-t-transparent rounded-full mb-6"
+                    />
+                    <h2 className="text-2xl font-serif font-bold text-cocoa-brown animate-pulse">Cargando Pastelicia...</h2>
+                    <p className="text-muted-mauve/60 mt-2">Preparando tus dulces favoritos</p>
+                </div>
+            );
+        }
+
         // Access Control: Only admin and superadmin can access #admin
         if (page === '#admin') {
             if (currentUserRole === 'customer') {
