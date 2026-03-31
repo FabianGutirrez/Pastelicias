@@ -25,7 +25,6 @@ export interface CustomizationOptions {
   flavor: string;
   filling: string;
   color: string;
-  message: string;
 }
 
 export interface CartItem {

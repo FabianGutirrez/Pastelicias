@@ -17,7 +17,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
     const [selectedSubProductIds, setSelectedSubProductIds] = useState<number[]>([]);
     
     const [customizations, setCustomizations] = useState<CustomizationOptions>(() => {
-        const initial: CustomizationOptions = { flavor: '', filling: '', color: '', message: '' };
+        const initial: CustomizationOptions = { flavor: '', filling: '', color: '' };
         if (product.availableCustomizations?.includes('flavors')) initial.flavor = customizationOptions.flavors[0];
         if (product.availableCustomizations?.includes('fillings')) initial.filling = customizationOptions.fillings[0];
         if (product.availableCustomizations?.includes('colors')) initial.color = customizationOptions.colors[0];
@@ -171,22 +171,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
                                     {product.availableCustomizations?.includes('colors') && (
                                         <CustomizationSelect id="color" name="Color de Decoración" options={customizationOptions.colors} value={customizations.color} onChange={handleCustomizationChange} />
                                     )}
-                                    
-                                    <div className="space-y-2">
-                                        <label htmlFor="message" className="text-xs font-bold text-cocoa-brown/60 ml-1">
-                                            Mensaje Personalizado (opcional)
-                                        </label>
-                                        <input 
-                                            type="text" 
-                                            id="message" 
-                                            name="message" 
-                                            value={customizations.message} 
-                                            onChange={handleCustomizationChange} 
-                                            maxLength={30} 
-                                            className="w-full bg-cream border border-cocoa-brown/10 rounded-xl py-3 px-4 text-sm text-cocoa-brown focus:border-rose-gold outline-none transition-all" 
-                                            placeholder="Ej: ¡Feliz Cumpleaños!"
-                                        />
-                                    </div>
                                 </div>
                             )}
                         </div>
@@ -209,7 +193,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
 };
 
 interface CustomizationSelectProps {
-    id: keyof Omit<CustomizationOptions, 'message'>;
+    id: keyof CustomizationOptions;
     name: string;
     options: string[];
     value: string;

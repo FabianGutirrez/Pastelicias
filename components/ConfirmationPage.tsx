@@ -27,9 +27,6 @@ const generateOrderSummaryText = (details: OrderDetails): string => {
         if (item.selectedSubProducts && item.selectedSubProducts.length > 0) {
             summary += `  - Selección: ${item.selectedSubProducts.join(', ')}\n`;
         }
-        if (item.customizations.message) {
-            summary += `  - Mensaje: "${item.customizations.message}"\n`;
-        }
         summary += `  - Precio: $${item.selectedTier.price.toLocaleString('es-CL')}\n`;
     });
     summary += `----------------------------------\n\n`;
@@ -207,11 +204,6 @@ const OrderItem: React.FC<{item: CartItem}> = ({ item }) => (
                 {item.selectedSubProducts && item.selectedSubProducts.length > 0 && (
                     <span className="text-xs bg-white/80 px-3 py-1 rounded-full text-cocoa-brown/70 border border-blush-pink/20">
                         Variedades: {item.selectedSubProducts.join(', ')}
-                    </span>
-                )}
-                {item.customizations.message && (
-                    <span className="text-xs bg-rose-gold/10 px-3 py-1 rounded-full text-cocoa-brown/70 border border-rose-gold/20 italic">
-                        "{item.customizations.message}"
                     </span>
                 )}
             </div>

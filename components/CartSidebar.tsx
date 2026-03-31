@@ -58,9 +58,6 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, d
             if (item.selectedSubProducts && item.selectedSubProducts.length > 0) {
                  message += `  - Selección: ${item.selectedSubProducts.join(', ')}\n`;
             }
-            if (item.customizations.message) {
-                 message += `  - Mensaje: "${item.customizations.message}"\n`;
-            }
         });
         message += `\n*Subtotal:* $${subtotal.toLocaleString('es-CL')}`;
         message += `\n*Envío:* $${shippingCost.toLocaleString('es-CL')}`;
@@ -365,7 +362,6 @@ const CartItemCard: React.FC<{item: CartItem; onRemoveItem: (itemId: string) => 
                 {item.customizations.flavor && <p className="text-[10px] text-muted-mauve/70"><span className="font-bold">Sabor:</span> {item.customizations.flavor}</p>}
                 {item.customizations.filling && <p className="text-[10px] text-muted-mauve/70"><span className="font-bold">Relleno:</span> {item.customizations.filling}</p>}
                 {item.customizations.color && <p className="text-[10px] text-muted-mauve/70"><span className="font-bold">Color:</span> {item.customizations.color}</p>}
-                {item.customizations.message && <p className="text-[10px] text-rose-gold/80 italic">"{item.customizations.message}"</p>}
             </div>
             
             {item.selectedSubProducts && item.selectedSubProducts.length > 0 && (
