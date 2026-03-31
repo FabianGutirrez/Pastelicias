@@ -132,15 +132,24 @@ const AdminPage: React.FC<AdminPageProps> = ({
             setIsUploading(true);
             const { url: publicUrl, error } = await uploadImage(logoFile);
             if (publicUrl) {
-                onUpdateLogo(publicUrl);
-                setNewLogoPreview(null);
-                setLogoFile(null);
-                setNotification({
-                    isOpen: true,
-                    title: '¡Éxito!',
-                    message: 'El logo se ha actualizado correctamente.',
-                    type: 'success'
-                });
+                try {
+                    await onUpdateLogo(publicUrl);
+                    setNewLogoPreview(null);
+                    setLogoFile(null);
+                    setNotification({
+                        isOpen: true,
+                        title: '¡Éxito!',
+                        message: 'El logo se ha actualizado correctamente en la tienda y en la nube.',
+                        type: 'success'
+                    });
+                } catch (updateError: any) {
+                    setNotification({
+                        isOpen: true,
+                        title: 'Error de Actualización',
+                        message: `La imagen se subió pero no se pudo actualizar la configuración: ${updateError.message || 'Error desconocido'}`,
+                        type: 'error'
+                    });
+                }
             } else {
                 let message = 'Error al subir el logo.';
                 if (error?.message?.includes('bucket not found') || error?.status === 404) {

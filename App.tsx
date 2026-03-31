@@ -193,14 +193,14 @@ const App: React.FC = () => {
         try {
             const { error } = await supabase
                 .from('configuracion')
-                .update({ logo_url: newLogo })
-                .eq('id', 1);
+                .upsert({ id: 1, logo_url: newLogo });
             
             if (error) throw error;
             showToast('Logo actualizado con éxito', 'success');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating logo in Supabase:', error);
-            showToast('Error al actualizar el logo en la nube', 'error');
+            showToast(`Error al actualizar el logo en la nube: ${error.message || 'Error desconocido'}`, 'error');
+            throw error; // Re-throw to be caught by AdminPage
         }
     };
 
@@ -287,9 +287,9 @@ const App: React.FC = () => {
             const { error } = await supabase.from('products').insert([newProduct]);
             if (error) throw error;
             showToast('Producto añadido con éxito', 'success');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error adding product to Supabase:', error);
-            showToast('Error al guardar en la nube, pero se guardó localmente', 'info');
+            showToast(`Error al guardar en la nube: ${error.message || 'Error desconocido'}`, 'error');
         }
     };
 
@@ -304,9 +304,9 @@ const App: React.FC = () => {
             
             if (error) throw error;
             showToast('Producto actualizado con éxito', 'success');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating product in Supabase:', error);
-            showToast('Error al actualizar en la nube', 'error');
+            showToast(`Error al actualizar en la nube: ${error.message || 'Error desconocido'}`, 'error');
         }
     };
 
@@ -321,9 +321,9 @@ const App: React.FC = () => {
             
             if (error) throw error;
             showToast('Producto eliminado con éxito', 'success');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting product from Supabase:', error);
-            showToast('Error al eliminar en la nube', 'error');
+            showToast(`Error al eliminar en la nube: ${error.message || 'Error desconocido'}`, 'error');
         }
     };
 
@@ -337,9 +337,9 @@ const App: React.FC = () => {
             
             if (error) throw error;
             showToast('Opciones actualizadas', 'success');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating customizations in Supabase:', error);
-            showToast('Error al guardar opciones', 'error');
+            showToast(`Error al guardar opciones: ${error.message || 'Error desconocido'}`, 'error');
         }
     };
 
@@ -356,9 +356,9 @@ const App: React.FC = () => {
             
             if (error) throw error;
             showToast('Zonas de entrega actualizadas', 'success');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating delivery zones in Supabase:', error);
-            showToast('Error al guardar zonas', 'error');
+            showToast(`Error al guardar zonas: ${error.message || 'Error desconocido'}`, 'error');
         }
     };
 
