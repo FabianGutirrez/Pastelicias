@@ -9,7 +9,7 @@ interface ConfirmationPageProps {
 }
 
 const generateOrderSummaryText = (details: OrderDetails): string => {
-    let summary = `Resumen del Pedido - Pastelicias\n`;
+    let summary = `Resumen del Pedido - Pastelicia\n`;
     summary += `==================================\n\n`;
     summary += `DATOS DEL CLIENTE:\n`;
     summary += `Nombre: ${details.customerName}\n`;
@@ -70,7 +70,7 @@ const ConfirmationPage: React.FC<ConfirmationPageProps> = ({ orderDetails }) => 
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `pedido_pastelicias_${orderDetails.customerName.replace(/\s/g, '_')}.txt`;
+        link.download = `pedido_pastelicia_${orderDetails.customerName.replace(/\s/g, '_')}.txt`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

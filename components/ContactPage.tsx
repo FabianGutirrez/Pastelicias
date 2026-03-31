@@ -36,17 +36,17 @@ const ContactPage: React.FC = () => {
                             <ContactInfoItem 
                                 icon={<Clock className="w-6 h-6 text-rose-gold" />}
                                 title="Horario de Atención"
-                                content={["Lunes a Domingo: 24 hrs"]}
+                                content={["Lunes a Domingo las 24 hrs"]}
                             />
                             <ContactInfoItem 
                                 icon={<Phone className="w-6 h-6 text-rose-gold" />}
                                 title="Teléfono / WhatsApp"
-                                content={["+56 9 5468 1985"]}
+                                content={["56954681985"]}
                             />
                             <ContactInfoItem 
                                 icon={<Mail className="w-6 h-6 text-rose-gold" />}
                                 title="Correo Electrónico"
-                                content={["hola@pastelicias.cl"]}
+                                content={["hola@pastelicia.cl"]}
                             />
                         </div>
 

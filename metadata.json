@@ -1,5 +1,5 @@
-
 {
-  "name": "Pastelicias Online",
-  "description": "An elegant and functional prototype for an online pastry shop, featuring product customization, a shopping cart, and a checkout process."
+  "name": "Pastelicia Online",
+  "description": "An elegant and functional prototype for an online pastry shop, featuring product customization, a shopping cart, and a checkout process.",
+  "requestFramePermissions": []
 }

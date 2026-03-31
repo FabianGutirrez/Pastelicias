@@ -24,28 +24,28 @@ const generateUniqueId = () => ++lastId;
 
 const App: React.FC = () => {
     const [products, setProducts] = useState<Product[]>(() => {
-        const saved = localStorage.getItem('pastelicias_products');
+        const saved = localStorage.getItem('pastelicia_products');
         return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
     });
     const [customizationOptions, setCustomizationOptions] = useState<CustomizationCollection>(() => {
-        const saved = localStorage.getItem('pastelicias_customizations');
+        const saved = localStorage.getItem('pastelicia_customizations');
         return saved ? JSON.parse(saved) : INITIAL_CUSTOMIZATION_OPTIONS;
     });
     const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>(() => {
-        const saved = localStorage.getItem('pastelicias_delivery_zones');
+        const saved = localStorage.getItem('pastelicia_delivery_zones');
         return saved ? JSON.parse(saved) : INITIAL_DELIVERY_ZONES;
     });
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-        const saved = localStorage.getItem('pastelicias_cart');
+        const saved = localStorage.getItem('pastelicia_cart');
         return saved ? JSON.parse(saved) : [];
     });
 
     const [page, setPage] = useState(window.location.hash || '#');
     const [siteLogo, setSiteLogo] = useState<string>(() => {
-        const saved = localStorage.getItem('pastelicias_logo');
+        const saved = localStorage.getItem('pastelicia_logo');
         return saved || logoBase64;
     });
     const [confirmedOrder, setConfirmedOrder] = useState<OrderDetails | null>(null);
@@ -53,34 +53,34 @@ const App: React.FC = () => {
     // Default role is 'customer'. Login is only for admin roles.
     const [currentUserRole, setCurrentUserRole] = useState<UserRole>('customer');
     const [analyticsData, setAnalyticsData] = useState<AnalyticsEvent[]>(() => {
-        const saved = localStorage.getItem('pastelicias_analytics');
+        const saved = localStorage.getItem('pastelicia_analytics');
         return saved ? JSON.parse(saved) : [];
     });
     const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
     // Persistence Effects
     useEffect(() => {
-        localStorage.setItem('pastelicias_products', JSON.stringify(products));
+        localStorage.setItem('pastelicia_products', JSON.stringify(products));
     }, [products]);
 
     useEffect(() => {
-        localStorage.setItem('pastelicias_customizations', JSON.stringify(customizationOptions));
+        localStorage.setItem('pastelicia_customizations', JSON.stringify(customizationOptions));
     }, [customizationOptions]);
 
     useEffect(() => {
-        localStorage.setItem('pastelicias_delivery_zones', JSON.stringify(deliveryZones));
+        localStorage.setItem('pastelicia_delivery_zones', JSON.stringify(deliveryZones));
     }, [deliveryZones]);
 
     useEffect(() => {
-        localStorage.setItem('pastelicias_cart', JSON.stringify(cartItems));
+        localStorage.setItem('pastelicia_cart', JSON.stringify(cartItems));
     }, [cartItems]);
 
     useEffect(() => {
-        localStorage.setItem('pastelicias_logo', siteLogo);
+        localStorage.setItem('pastelicia_logo', siteLogo);
     }, [siteLogo]);
 
     useEffect(() => {
-        localStorage.setItem('pastelicias_analytics', JSON.stringify(analyticsData));
+        localStorage.setItem('pastelicia_analytics', JSON.stringify(analyticsData));
     }, [analyticsData]);
 
     const [toast, setToast] = useState<{ isVisible: boolean; message: string; type: ToastType }>({
@@ -156,6 +156,7 @@ const App: React.FC = () => {
         const handleHashChange = () => {
             setPage(window.location.hash || '#');
             setIsMenuOpen(false); // Close menu on navigation
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
         window.addEventListener('hashchange', handleHashChange);
         return () => window.removeEventListener('hashchange', handleHashChange);
@@ -291,38 +292,51 @@ const App: React.FC = () => {
             <main className="container mx-auto px-4 py-8 flex-grow">
                 {renderPage()}
             </main>
-            <footer className="bg-cocoa-brown pt-20 pb-10 text-cream">
+            <footer className="bg-[#1a1412] pt-20 pb-10 text-cream border-t border-rose-gold/10">
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
                         {/* Column 1: Brand */}
                         <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
                             <div className="flex flex-col items-center md:items-start gap-4">
                                 <div className="w-20 h-20 bg-cream/10 backdrop-blur-md rounded-3xl p-3 border border-cream/20 shadow-2xl">
-                                    <img src={siteLogo} alt="Pastelicias Logo" className="w-full h-full object-contain" />
+                                    <img src={siteLogo} alt="Pastelicia Logo" className="w-full h-full object-contain" />
                                 </div>
                                 <div>
-                                    <h3 className="text-2xl font-serif font-bold text-rose-gold tracking-tight">Pastelicias</h3>
-                                    <p className="text-xs font-bold text-cream/40 uppercase tracking-[0.2em] mt-1 italic">Endulzando tus sueños, un pastel a la vez.</p>
+                                    <h3 className="text-2xl font-serif font-bold text-rose-gold tracking-tight">Pastelicia</h3>
+                                    <p className="text-[10px] font-bold text-cream/30 uppercase tracking-[0.3em] mt-1 italic">Excelencia en Alta Repostería</p>
                                 </div>
                             </div>
-                            <p className="text-cream/70 leading-relaxed max-w-sm">
-                                Repostería artesanal con amor y dedicación. Creamos momentos dulces e inolvidables para cada una de tus celebraciones, utilizando ingredientes de la más alta calidad.
-                            </p>
+                            <div className="space-y-4">
+                                <p className="text-cream/70 leading-relaxed max-w-sm text-sm">
+                                    En <span className="text-rose-gold font-bold">Pastelicia</span>, transformamos ingredientes premium en obras de arte comestibles. Nuestra pasión es crear experiencias sensoriales únicas que celebren los momentos más importantes de tu vida.
+                                </p>
+                                <p className="text-cream/50 text-xs italic font-serif border-l-2 border-rose-gold/30 pl-4 py-1">
+                                    "Cada detalle cuenta, cada sabor cuenta una historia de dedicación y amor por el arte dulce."
+                                </p>
+                            </div>
                         </div>
                         
                         {/* Column 2: Links */}
                         <div className="text-center">
                             <h4 className="text-lg font-bold font-serif text-rose-gold mb-6">Navegación</h4>
                             <nav className="flex flex-col space-y-4 text-cream/80">
-                                <a href="#" className="hover:text-rose-gold transition-colors">Inicio</a>
-                                <a href="#catalog" className="hover:text-rose-gold transition-colors">Catálogo</a>
-                                <a href="#contact" className="hover:text-rose-gold transition-colors">Contacto</a>
+                                <a href="#" className="hover:text-rose-gold transition-colors text-sm">Inicio</a>
+                                <a href="#catalog" className="hover:text-rose-gold transition-colors text-sm">Catálogo</a>
+                                <a href="#contact" className="hover:text-rose-gold transition-colors text-sm">Contacto</a>
+                                <div className="pt-10">
+                                    <button 
+                                        onClick={() => window.location.hash = '#login'}
+                                        className="text-cream/10 hover:text-rose-gold/40 transition-all duration-500 text-[9px] font-bold uppercase tracking-[0.3em] hover:tracking-[0.4em] cursor-pointer"
+                                    >
+                                        Acceso Administrativo
+                                    </button>
+                                </div>
                             </nav>
                         </div>
 
                         {/* Column 3: Social */}
                         <div className="text-center md:text-right">
-                             <h4 className="text-lg font-bold font-serif text-rose-gold mb-6">Síguenos</h4>
+                             <h4 className="text-lg font-bold font-serif text-rose-gold mb-6">Conecta con nosotros</h4>
                              <div className="flex justify-center md:justify-end space-x-6">
                                  <a href="#" aria-label="Instagram" className="w-12 h-12 bg-cream/5 rounded-2xl flex items-center justify-center text-cream hover:bg-rose-gold hover:text-cocoa-brown transition-all duration-300 border border-cream/10">
                                     <InstagramIcon />
@@ -334,13 +348,15 @@ const App: React.FC = () => {
                                     <WhatsappIcon />
                                  </a>
                              </div>
-                             <p className="mt-8 text-cream/40 text-xs font-medium uppercase tracking-widest">Síguenos para ver nuestras últimas creaciones</p>
+                             <p className="mt-8 text-cream/30 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
+                                Descubre nuestras creaciones diarias<br/>y promociones exclusivas en redes sociales.
+                             </p>
                         </div>
                     </div>
 
                     {/* Bottom Bar */}
-                    <div className="mt-20 pt-8 border-t border-cream/10 text-center text-cream/40 text-xs tracking-widest uppercase font-bold">
-                         <p>&copy; {new Date().getFullYear()} Pastelicias. Todos los derechos reservados.</p>
+                    <div className="mt-20 pt-8 border-t border-cream/5 text-center text-cream/20 text-[10px] tracking-[0.2em] uppercase font-bold">
+                         <p>&copy; {new Date().getFullYear()} Pastelicia. Todos los derechos reservados.</p>
                     </div>
                 </div>
             </footer>

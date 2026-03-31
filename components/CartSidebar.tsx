@@ -51,7 +51,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, d
     const total = useMemo(() => subtotal + shippingCost, [subtotal, shippingCost]);
     
     const generateWhatsAppMessage = () => {
-        let message = `¡Hola Pastelicias! 👋 Quiero hacer el siguiente pedido:\n\n`;
+        let message = `¡Hola Pastelicia! 👋 Quiero hacer el siguiente pedido:\n\n`;
         message += `*MI PEDIDO:*\n`;
         cartItems.forEach(item => {
             message += `• *${item.product.name}* (${item.selectedTier.label}) - $${item.selectedTier.price.toLocaleString('es-CL')}\n`;

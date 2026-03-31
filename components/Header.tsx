@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag, Menu, X, User, LogOut, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, Menu, X, LogOut, ShieldCheck } from 'lucide-react';
 import { UserRole } from '../types';
 
 interface HeaderProps {
@@ -60,7 +60,7 @@ const Header: React.FC<HeaderProps> = ({ logoUrl, onCartClick, cartItemCount, cu
                     whileTap={{ scale: 0.95 }}
                     className="relative z-50"
                 >
-                    <img src={logoUrl} alt="Pastelicias Logo" className="h-12 w-auto drop-shadow-sm" />
+                    <img src={logoUrl} alt="Pastelicia Logo" className="h-12 w-auto drop-shadow-sm" />
                 </motion.a>
 
                 <nav className="hidden md:flex items-center space-x-10">
@@ -70,17 +70,7 @@ const Header: React.FC<HeaderProps> = ({ logoUrl, onCartClick, cartItemCount, cu
                 <div className="flex items-center gap-3">
                     {/* User Actions */}
                     <div className="hidden sm:flex items-center">
-                        {currentUserRole === 'customer' ? (
-                            <motion.a 
-                                whileHover={{ y: -2 }}
-                                whileTap={{ y: 0 }}
-                                href="#login" 
-                                className="flex items-center gap-2 bg-cream/30 border border-blush-pink/20 rounded-2xl px-4 py-2 text-xs font-bold text-cocoa-brown hover:bg-white hover:shadow-md transition-all"
-                            >
-                                <User className="w-4 h-4 text-rose-gold" />
-                                <span>Acceso</span>
-                            </motion.a>
-                        ) : (
+                        {currentUserRole !== 'customer' && (
                             <div className="flex items-center gap-3 bg-rose-gold/5 border border-rose-gold/20 rounded-2xl px-4 py-2 text-xs">
                                 <div className="flex items-center gap-2">
                                     <ShieldCheck className="w-4 h-4 text-rose-gold" />
@@ -113,7 +103,7 @@ const Header: React.FC<HeaderProps> = ({ logoUrl, onCartClick, cartItemCount, cu
                                     initial={{ scale: 0, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     exit={{ scale: 0, opacity: 0 }}
-                                    className="absolute -top-1.5 -right-1.5 bg-rose-gold text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white shadow-sm"
+                                    className="absolute -top-1.5 -right-1.5 bg-rose-gold text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-cream shadow-sm"
                                 >
                                     {cartItemCount}
                                 </motion.span>
@@ -139,10 +129,10 @@ const Header: React.FC<HeaderProps> = ({ logoUrl, onCartClick, cartItemCount, cu
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed inset-0 bg-white z-[100] md:hidden flex flex-col"
+                        className="fixed inset-0 bg-cream z-[100] md:hidden flex flex-col"
                     >
                         <div className="flex justify-between items-center p-6 border-b border-blush-pink/10">
-                            <img src={logoUrl} alt="Pastelicias Logo" className="h-10 w-auto" />
+                            <img src={logoUrl} alt="Pastelicia Logo" className="h-10 w-auto" />
                             <button 
                                 onClick={closeMenu} 
                                 className="w-11 h-11 bg-cream/50 rounded-2xl flex items-center justify-center text-cocoa-brown hover:bg-rose-gold hover:text-white transition-all"
@@ -168,12 +158,7 @@ const Header: React.FC<HeaderProps> = ({ logoUrl, onCartClick, cartItemCount, cu
                                 transition={{ delay: 0.4 }}
                                 className="pt-10"
                             >
-                                {currentUserRole === 'customer' ? (
-                                    <a href="#login" onClick={closeMenu} className="flex items-center gap-3 bg-rose-gold text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-rose-gold/20">
-                                        <User className="w-5 h-5" />
-                                        <span>Acceso Administrativo</span>
-                                    </a>
-                                ) : (
+                                {currentUserRole !== 'customer' && (
                                     <button onClick={() => { onLogout(); closeMenu(); }} className="flex items-center gap-3 bg-red-500 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-red-500/20">
                                         <LogOut className="w-5 h-5" />
                                         <span>Cerrar Sesión</span>
@@ -183,7 +168,7 @@ const Header: React.FC<HeaderProps> = ({ logoUrl, onCartClick, cartItemCount, cu
                         </nav>
                         
                         <div className="p-10 text-center">
-                            <p className="text-xs font-bold text-muted-mauve/40 uppercase tracking-widest">Pastelicias © 2024</p>
+                            <p className="text-xs font-bold text-muted-mauve/40 uppercase tracking-widest">Pastelicia © 2024</p>
                         </div>
                     </motion.div>
                 )}

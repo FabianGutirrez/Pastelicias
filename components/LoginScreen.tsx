@@ -85,7 +85,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
             <NotificationModal 
                 isOpen={!!successMessage}
                 onClose={() => setSuccessMessage('')}
-                title="¡Bienvenido a Pastelicias!"
+                title="¡Bienvenido a Pastelicia!"
                 message={successMessage}
                 type="success"
             />
@@ -93,7 +93,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-lg bg-white p-10 sm:p-14 rounded-[2.5rem] shadow-2xl border border-rose-gold/10 relative overflow-hidden"
+                className="w-full max-w-lg bg-cream p-10 sm:p-14 rounded-[2.5rem] shadow-2xl border border-rose-gold/10 relative overflow-hidden"
             >
                 {/* Decorative background element */}
                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-blush-pink/20 rounded-full blur-3xl" />
@@ -110,7 +110,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                         Portal Administrativo
                     </h1>
                     <p className="text-muted-mauve mb-12 text-center text-lg">
-                        Gestiona la dulzura de Pastelicias
+                        Gestiona la dulzura de Pastelicia
                     </p>
 
                     <AnimatePresence mode="wait">
@@ -154,7 +154,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                                 className="space-y-6"
                             >
                                 <div className="flex items-center gap-4 mb-8 p-4 bg-cream/50 rounded-2xl border border-rose-gold/10">
-                                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                                    <div className="w-12 h-12 bg-cream rounded-xl flex items-center justify-center shadow-sm">
                                         {selectedRole === 'superadmin' ? <ShieldCheck className="w-6 h-6 text-gray-700" /> : <UserCircle className="w-6 h-6 text-cocoa-brown" />}
                                     </div>
                                     <div>
@@ -280,12 +280,12 @@ const RoleButton: React.FC<RoleButtonProps> = ({ onClick, text, description, ico
         onClick={onClick}
         className={`w-full p-6 rounded-3xl transition-all duration-300 flex items-center gap-5 group text-left border-2 ${
             variant === 'primary' 
-            ? 'bg-white border-rose-gold/20 hover:border-rose-gold hover:shadow-xl hover:shadow-rose-gold/5' 
+            ? 'bg-cream border-rose-gold/20 hover:border-rose-gold hover:shadow-xl hover:shadow-rose-gold/5' 
             : 'bg-gray-50 border-gray-200 hover:border-gray-400 hover:shadow-xl hover:shadow-gray-200/50'
         }`}
     >
         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${
-            variant === 'primary' ? 'bg-cream text-rose-gold group-hover:bg-rose-gold group-hover:text-white' : 'bg-white text-gray-600 group-hover:bg-gray-700 group-hover:text-white'
+            variant === 'primary' ? 'bg-cream text-rose-gold group-hover:bg-rose-gold group-hover:text-white' : 'bg-cream text-gray-600 group-hover:bg-gray-700 group-hover:text-white'
         }`}>
             {icon}
         </div>
