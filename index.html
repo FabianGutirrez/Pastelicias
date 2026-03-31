@@ -9,47 +9,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
-  
-
-  <script>
-    // Configuración de Tailwind para reconocer tus colores personalizados
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'cream': '#FFF7F0',
-            'peach': '#FFDAB9',
-            'brown-sugar': '#B08968',
-            'dark-choco': '#7F5539',
-            'gold-accent': '#D4AF37',
-          },
-          fontFamily: {
-            'serif': ['Playfair Display', 'serif'],
-            'sans': ['Roboto', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
-
   <style type="text/css">
-    /* Previene desplazamientos horizontales accidentales en móviles */
+    /* Estilos base mínimos para evitar saltos visuales antes de que cargue JS */
     body {
       overflow-x: hidden;
       width: 100%;
+      margin: 0;
+      background-color: #FFF9F5; /* El color 'cream' de tu config */
     }
     #root {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
   </style>
 </head>
-<body class="bg-cream font-sans text-dark-choco antialiased">
+<body class="antialiased">
   
   <div id="root"></div>
 
-  <script type="module" src="./index.tsx"></script>
+  <script type="module" src="/index.tsx"></script>
 
 </body>
 </html>
