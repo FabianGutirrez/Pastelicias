@@ -20,9 +20,9 @@ import { WhatsappIcon } from './components/icons/WhatsappIcon';
 import { logoBase64 } from './assets/logo';
 
 const App: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
     const [customizationOptions, setCustomizationOptions] = useState<CustomizationCollection>(INITIAL_CUSTOMIZATION_OPTIONS);
-    const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
+    const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>(INITIAL_DELIVERY_ZONES);
     
     const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -38,7 +38,7 @@ const App: React.FC = () => {
                     .order('id', { ascending: true });
                 
                 if (productsError) throw productsError;
-                setProducts(productsData || INITIAL_PRODUCTS);
+                setProducts(productsData && productsData.length > 0 ? productsData : INITIAL_PRODUCTS);
 
                 // Fetch Customizations
                 const { data: customizationsData, error: customizationsError } = await supabase
@@ -47,7 +47,7 @@ const App: React.FC = () => {
                     .single();
                 
                 if (customizationsError && customizationsError.code !== 'PGRST116') throw customizationsError;
-                if (customizationsData) {
+                if (customizationsData && (customizationsData.flavors?.length || customizationsData.fillings?.length || customizationsData.colors?.length)) {
                     setCustomizationOptions({
                         flavors: customizationsData.flavors || [],
                         fillings: customizationsData.fillings || [],
@@ -64,7 +64,7 @@ const App: React.FC = () => {
                     .order('price', { ascending: true });
                 
                 if (zonesError) throw zonesError;
-                setDeliveryZones(zonesData || INITIAL_DELIVERY_ZONES);
+                setDeliveryZones(zonesData && zonesData.length > 0 ? zonesData : INITIAL_DELIVERY_ZONES);
 
                 // Fetch Logo from configuracion table
                 const { data: configData, error: configError } = await supabase
@@ -193,7 +193,8 @@ const App: React.FC = () => {
         try {
             const { error } = await supabase
                 .from('configuracion')
-                .upsert({ id: 1, logo_url: newLogo });
+                .update({ logo_url: newLogo })
+                .eq('id', 1);
             
             if (error) throw error;
             showToast('Logo actualizado con éxito', 'success');
