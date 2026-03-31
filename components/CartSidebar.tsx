@@ -68,12 +68,10 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, d
         message += `\n*DETALLES DE ENTREGA:*`;
         message += `\n- *Tipo:* ${deliveryType === 'pickup' ? 'Retiro en Tienda' : 'Entrega a Domicilio'}`;
         if (deliveryType === 'delivery') {
-            if (selectedZone) {
-                message += `\n- *Zona:* ${selectedZone.name}`;
-            }
-            if (customerAddress) {
-                message += `\n- *Dirección:* ${customerAddress}`;
-            }
+            message += `\n- *ZONA SELECCIONADA:* ${selectedZone ? selectedZone.name : 'No especificada'}`;
+            message += `\n- *DIRECCIÓN:* ${customerAddress || 'No especificada'}`;
+            message += `\n- *COSTO ENVÍO:* $${shippingCost.toLocaleString('es-CL')}`;
+            message += `\n_(Sujeto a verificación de dirección)_`;
         }
         message += `\n- *Fecha:* ${deliveryDate}`;
         if (specialInstructions) {
@@ -261,6 +259,9 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, d
                                                             value={customerAddress} 
                                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomerAddress(e.target.value)} 
                                                         />
+                                                        <p className="text-[10px] text-red-500/70 italic px-2">
+                                                            * La dirección será verificada. Si la zona no corresponde, el costo de envío será ajustado.
+                                                        </p>
                                                     </motion.div>
                                                 )}
                                             </AnimatePresence>
