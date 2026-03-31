@@ -15,7 +15,7 @@ interface CartSidebarProps {
 }
 
 const DELIVERY_SHIPPING_COST = 5000;
-const YOUR_WHATSAPP_NUMBER = "56954681985"; // IMPORTANTE: Reemplazar con tu número de WhatsApp con código de país.
+const YOUR_WHATSAPP_NUMBER = "56912345678"; // IMPORTANTE: Reemplazar con tu número de WhatsApp con código de país.
 
 const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, onRemoveItem, onConfirmOrder, cartItemCount }) => {
     const [deliveryType, setDeliveryType] = useState<'pickup' | 'delivery'>('pickup');
@@ -90,7 +90,6 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
 
         onConfirmOrder(orderDetails);
         
-        // CORRECTO: Ahora sí estás "leyendo" la variable que declaraste arriba
         const whatsappUrl = `https://wa.me/${YOUR_WHATSAPP_NUMBER}?text=${generateWhatsAppMessage()}`;
         window.open(whatsappUrl, '_blank');
     };
@@ -112,31 +111,31 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed top-0 right-0 h-full w-full max-w-md sm:max-w-lg bg-cream shadow-2xl z-50 flex flex-col outline-none border-l border-white/20"
+                        className="fixed top-0 right-0 h-full w-full max-w-md sm:max-w-lg bg-cream shadow-2xl z-50 flex flex-col outline-none border-l border-cream/20"
                         role="dialog"
                         aria-modal="true"
                     >
                         {/* Header */}
-                        <div className="p-8 border-b border-blush-pink/20 flex justify-between items-center bg-cream/10">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-rose-gold/10 rounded-2xl flex items-center justify-center text-rose-gold shadow-inner">
-                                    <ShoppingBag className="w-6 h-6" />
+                        <div className="p-6 sm:p-8 border-b border-blush-pink/20 flex justify-between items-center bg-cream/10">
+                            <div className="flex items-center gap-3 sm:gap-4">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-rose-gold/10 rounded-xl sm:rounded-2xl flex items-center justify-center text-rose-gold shadow-inner">
+                                    <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-serif font-bold text-cocoa-brown">Tu Carrito</h2>
-                                    <p className="text-xs font-bold text-muted-mauve/60 uppercase tracking-widest">{cartItemCount} {cartItemCount === 1 ? 'producto' : 'productos'}</p>
+                                    <h2 className="text-xl sm:text-2xl font-serif font-bold text-cocoa-brown">Tu Carrito</h2>
+                                    <p className="text-[10px] font-bold text-muted-mauve/60 uppercase tracking-widest">{cartItemCount} {cartItemCount === 1 ? 'producto' : 'productos'}</p>
                                 </div>
                             </div>
                             <button 
                                 onClick={onClose} 
-                                className="w-10 h-10 bg-cream/50 rounded-full flex items-center justify-center text-cocoa-brown hover:bg-rose-gold hover:text-white transition-all"
+                                className="w-9 h-9 sm:w-10 sm:h-10 bg-cream/50 rounded-full flex items-center justify-center text-cocoa-brown hover:bg-rose-gold hover:text-white transition-all"
                             >
-                                <X className="w-5 h-5" />
+                                <X className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
                         </div>
 
                         {/* Content */}
-                        <div className="flex-grow overflow-y-auto p-8 custom-scrollbar">
+                        <div className="flex-grow overflow-y-auto p-6 sm:p-8 custom-scrollbar">
                             {cartItems.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
                                     <div className="w-24 h-24 bg-cream/50 rounded-full flex items-center justify-center text-muted-mauve/20">
@@ -229,19 +228,19 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
 
                         {/* Footer */}
                         {cartItems.length > 0 && (
-                            <div className="p-8 border-t border-blush-pink/20 bg-cream shadow-[0_-10px_40px_rgba(0,0,0,0.05)] space-y-6">
-                                <div className="space-y-3">
-                                    <div className="flex justify-between text-muted-mauve font-medium">
+                            <div className="p-6 sm:p-8 border-t border-blush-pink/20 bg-cream shadow-[0_-10px_40px_rgba(0,0,0,0.05)] space-y-4 sm:space-y-6">
+                                <div className="space-y-2 sm:space-y-3">
+                                    <div className="flex justify-between text-muted-mauve font-medium text-sm sm:text-base">
                                         <span>Subtotal</span>
                                         <span>${subtotal.toLocaleString('es-CL')}</span>
                                     </div>
-                                    <div className="flex justify-between text-muted-mauve font-medium">
+                                    <div className="flex justify-between text-muted-mauve font-medium text-sm sm:text-base">
                                         <span>Costo de Envío</span>
                                         <span>${shippingCost.toLocaleString('es-CL')}</span>
                                     </div>
-                                    <div className="pt-4 border-t border-blush-pink/10 flex justify-between items-center">
-                                        <span className="text-2xl font-serif font-bold text-cocoa-brown">Total</span>
-                                        <span className="text-3xl font-bold text-rose-gold">${total.toLocaleString('es-CL')}</span>
+                                    <div className="pt-3 sm:pt-4 border-t border-blush-pink/10 flex justify-between items-center">
+                                        <span className="text-xl sm:text-2xl font-serif font-bold text-cocoa-brown">Total</span>
+                                        <span className="text-2xl sm:text-3xl font-bold text-rose-gold">${total.toLocaleString('es-CL')}</span>
                                     </div>
                                 </div>
                                 
@@ -249,11 +248,11 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
                                     whileHover={{ scale: 1.02, y: -2 }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={handleConfirm} 
-                                    className="w-full bg-[#25D366] text-white font-bold py-5 rounded-2xl hover:bg-[#128C7E] transition-all shadow-xl shadow-green-500/20 flex items-center justify-center gap-3 group"
+                                    className="w-full bg-[#25D366] text-white font-bold py-4 sm:py-5 rounded-2xl hover:bg-[#128C7E] transition-all shadow-xl shadow-green-500/20 flex items-center justify-center gap-2 sm:gap-3 group"
                                 >
                                     <WhatsappIcon />
-                                    <span className="text-lg">Confirmar por WhatsApp</span>
-                                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    <span className="text-base sm:text-lg">Confirmar por WhatsApp</span>
+                                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                                 </motion.button>
                             </div>
                         )}
@@ -335,7 +334,7 @@ const RadioOption: React.FC<{id: string, name: string, value: string, checked: b
                     onChange={onChange} 
                     className="peer h-5 w-5 rounded-full border-2 border-blush-pink text-rose-gold focus:ring-rose-gold transition-all appearance-none checked:bg-rose-gold checked:border-rose-gold" 
                 />
-                <div className="absolute w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100 left-1.5 pointer-events-none transition-opacity" />
+                <div className="absolute w-2 h-2 bg-cream rounded-full opacity-0 peer-checked:opacity-100 left-1.5 pointer-events-none transition-opacity" />
             </div>
             <span className={`ml-4 text-sm font-bold ${checked ? 'text-cocoa-brown' : 'text-muted-mauve'}`}>{label}</span>
         </div>

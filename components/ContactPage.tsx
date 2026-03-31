@@ -8,40 +8,40 @@ const ContactPage: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
-        <section id="contact" className="max-w-6xl mx-auto py-12">
+        <section id="contact" className="max-w-6xl mx-auto py-8 sm:py-12 px-4 sm:px-0">
             <motion.div 
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-blush-pink/10"
+                className="bg-cream rounded-[2rem] sm:rounded-[3rem] shadow-2xl overflow-hidden border border-blush-pink/10"
             >
                 <div className="grid grid-cols-1 lg:grid-cols-5">
                     {/* Contact Info Sidebar */}
-                    <div className="lg:col-span-2 bg-cocoa-brown p-12 text-white space-y-12 relative overflow-hidden">
+                    <div className="lg:col-span-2 bg-cocoa-brown p-8 sm:p-12 text-white space-y-8 sm:space-y-12 relative overflow-hidden">
                         {/* Decorative Background */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-rose-gold/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-rose-gold/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
 
-                        <div className="relative z-10 space-y-4">
-                            <h2 className="text-4xl font-serif font-bold leading-tight">Hablemos de tu <span className="text-rose-gold italic">próximo evento</span></h2>
-                            <p className="text-cream/60 font-light leading-relaxed">Estamos aquí para hacer tus momentos más dulces. Cuéntanos qué necesitas y te ayudaremos a personalizar cada detalle.</p>
+                        <div className="relative z-10 space-y-3 sm:space-y-4">
+                            <h2 className="text-3xl sm:text-4xl font-serif font-bold leading-tight">Hablemos de tu <span className="text-rose-gold italic">próximo evento</span></h2>
+                            <p className="text-sm sm:text-base text-cream/60 font-light leading-relaxed">Estamos aquí para hacer tus momentos más dulces. Cuéntanos qué necesitas y te ayudaremos a personalizar cada detalle.</p>
                         </div>
 
-                        <div className="relative z-10 space-y-8">
+                        <div className="relative z-10 space-y-6 sm:space-y-8">
                             <ContactInfoItem 
                                 icon={<MapPin className="w-6 h-6 text-rose-gold" />}
                                 title="Nuestra Ubicación"
-                                content={["Lago Bertrand 120, Quilpué, Valparaíso, Chile"]}
+                                content={["Calle Ficticia 123,", "Ciudad Dulce, CP 54321"]}
                             />
                             <ContactInfoItem 
                                 icon={<Clock className="w-6 h-6 text-rose-gold" />}
                                 title="Horario de Atención"
-                                content={["todos los dias"]}
+                                content={["Lunes a Sábado: 9am - 8pm", "Domingo: 10am - 6pm"]}
                             />
                             <ContactInfoItem 
                                 icon={<Phone className="w-6 h-6 text-rose-gold" />}
                                 title="Teléfono / WhatsApp"
-                                content={["+56 9 5468 1985"]}
+                                content={["+56 9 1234 5678"]}
                             />
                             <ContactInfoItem 
                                 icon={<Mail className="w-6 h-6 text-rose-gold" />}
@@ -52,20 +52,20 @@ const ContactPage: React.FC = () => {
 
                         <div className="relative z-10 pt-8 flex gap-4">
                             <SocialLink href="#" label="Instagram" />
-                            <SocialLink href="https://www.facebook.com/profile.php?id=100063743610519&locale=es_LA" label="Facebook" />
+                            <SocialLink href="#" label="Facebook" />
                             <SocialLink href="#" label="WhatsApp" />
                         </div>
                     </div>
 
                     {/* Contact Form */}
-                    <div className="lg:col-span-3 p-12 bg-cream/10">
-                        <div className="max-w-md mx-auto lg:mx-0 space-y-8">
+                    <div className="lg:col-span-3 p-8 sm:p-12 bg-cream/10">
+                        <div className="max-w-md mx-auto lg:mx-0 space-y-6 sm:space-y-8">
                             <div className="space-y-2">
-                                <h3 className="text-2xl font-serif font-bold text-cocoa-brown">Envíanos un mensaje</h3>
-                                <p className="text-muted-mauve/60 text-sm">Te responderemos en menos de 24 horas.</p>
+                                <h3 className="text-xl sm:text-2xl font-serif font-bold text-cocoa-brown">Envíanos un mensaje</h3>
+                                <p className="text-muted-mauve/60 text-xs sm:text-sm">Te responderemos en menos de 24 horas hábiles.</p>
                             </div>
 
-                            <form action="#" method="POST" className="space-y-6" onSubmit={(e) => {
+                            <form action="#" method="POST" className="space-y-5 sm:space-y-6" onSubmit={(e) => {
                                 e.preventDefault();
                                 setIsModalOpen(true);
                             }}>
@@ -80,7 +80,7 @@ const ContactPage: React.FC = () => {
                                         placeholder="Cuéntanos más sobre tu pedido o consulta..." 
                                         rows={5} 
                                         required 
-                                        className="w-full bg-white border-2 border-blush-pink/20 rounded-2xl py-4 px-6 text-cocoa-brown focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/10 transition-all outline-none placeholder:text-muted-mauve/30 resize-none"
+                                        className="w-full bg-cream border-2 border-blush-pink/20 rounded-2xl py-4 px-6 text-cocoa-brown focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/10 transition-all outline-none placeholder:text-muted-mauve/30 resize-none"
                                     />
                                 </div>
                                 <motion.button 
@@ -128,7 +128,7 @@ const ContactInput: React.FC<{label: string, [key: string]: any}> = ({ label, ..
         <label className="text-xs font-bold text-cocoa-brown/40 uppercase tracking-widest ml-1">{label}</label>
         <input 
             {...props} 
-            className="w-full bg-white border-2 border-blush-pink/20 rounded-2xl py-4 px-6 text-cocoa-brown focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/10 transition-all outline-none placeholder:text-muted-mauve/30"
+            className="w-full bg-cream border-2 border-blush-pink/20 rounded-2xl py-4 px-6 text-cocoa-brown focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/10 transition-all outline-none placeholder:text-muted-mauve/30"
         />
     </div>
 );

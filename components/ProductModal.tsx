@@ -86,7 +86,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-[#FFF9F5] rounded-[2rem] shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col md:flex-row border border-cocoa-brown/5"
+                className="bg-cream rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden relative z-10 flex flex-col md:flex-row border border-cocoa-brown/5"
                 onClick={e => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
@@ -94,14 +94,14 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
                 {/* Close Button */}
                 <button 
                     onClick={onClose} 
-                    className="absolute top-4 right-4 z-30 p-2 text-cocoa-brown hover:opacity-70 transition-opacity"
+                    className="absolute top-3 right-3 sm:top-4 sm:right-4 z-30 p-2 bg-cream/80 backdrop-blur-md rounded-full text-cocoa-brown hover:opacity-70 transition-opacity shadow-sm"
                 >
-                    <X className="w-6 h-6" />
+                    <X className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
 
                 {/* Left Side: Image */}
-                <div className="w-full md:w-1/2 p-6 md:p-8">
-                    <div className="w-full h-full min-h-[300px] md:min-h-[400px] overflow-hidden rounded-2xl shadow-sm">
+                <div className="w-full md:w-1/2 p-4 sm:p-6 md:p-8">
+                    <div className="w-full h-48 sm:h-64 md:h-full min-h-[180px] sm:min-h-[250px] md:min-h-[400px] overflow-hidden rounded-xl sm:rounded-2xl shadow-sm">
                         <img 
                             src={product.imageUrl} 
                             alt={product.name} 
@@ -111,13 +111,13 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
                 </div>
 
                 {/* Right Side: Content */}
-                <div className="w-full md:w-1/2 flex flex-col p-8 md:pl-0 md:pr-10 md:py-10">
-                    <form onSubmit={handleSubmit} className="flex flex-col h-full">
+                <div className="w-full md:w-1/2 flex flex-col p-6 sm:p-8 md:pl-0 md:pr-10 md:py-10 h-full overflow-hidden">
+                    <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
                         <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar">
-                            <h2 className="text-3xl md:text-4xl font-serif font-bold text-cocoa-brown mb-4 leading-tight">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-cocoa-brown mb-2 sm:mb-4 leading-tight">
                                 {product.name}
                             </h2>
-                            <p className="text-muted-mauve/80 text-sm leading-relaxed mb-8 font-light">
+                            <p className="text-muted-mauve/80 text-xs sm:text-sm leading-relaxed mb-6 sm:mb-8 font-light">
                                 {product.longDescription || product.description}
                             </p>
 
@@ -131,7 +131,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
                                         </span>
                                     </div>
                                     
-                                    <div className="border border-cocoa-brown/10 rounded-xl overflow-hidden bg-white shadow-inner">
+                                    <div className="border border-cocoa-brown/10 rounded-xl overflow-hidden bg-cream shadow-inner">
                                         <div className="max-h-[250px] overflow-y-auto divide-y divide-cocoa-brown/5 custom-scrollbar">
                                             {availableSubProducts.map(subProduct => (
                                                 <label 
@@ -183,7 +183,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
                                             value={customizations.message} 
                                             onChange={handleCustomizationChange} 
                                             maxLength={30} 
-                                            className="w-full bg-white border border-cocoa-brown/10 rounded-xl py-3 px-4 text-sm text-cocoa-brown focus:border-rose-gold outline-none transition-all" 
+                                            className="w-full bg-cream border border-cocoa-brown/10 rounded-xl py-3 px-4 text-sm text-cocoa-brown focus:border-rose-gold outline-none transition-all" 
                                             placeholder="Ej: ¡Feliz Cumpleaños!"
                                         />
                                     </div>
@@ -192,13 +192,13 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
                         </div>
 
                         {/* Footer Action */}
-                        <div className="mt-8">
+                        <div className="mt-4 sm:mt-8">
                             <button 
                                 type="submit" 
                                 disabled={isPromoWithOptions && selectedSubProductIds.length < (product.selectableProducts?.maxSelections || 0)}
-                                className="w-full bg-[#FFF9F5] border border-cocoa-brown/10 text-cocoa-brown font-bold py-4 px-6 rounded-xl shadow-sm hover:bg-white transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+                                className="w-full bg-cream border border-cocoa-brown/10 text-cocoa-brown font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl shadow-sm hover:bg-cream/50 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
                             >
-                                <span className="text-lg">Añadir al Carrito - ${selectedTier.price.toLocaleString('es-CL')}</span>
+                                <span className="text-base sm:text-lg">Añadir al Carrito - ${selectedTier.price.toLocaleString('es-CL')}</span>
                             </button>
                         </div>
                     </form>
@@ -227,7 +227,7 @@ const CustomizationSelect: React.FC<CustomizationSelectProps> = ({ id, name, opt
                 name={id} 
                 value={value} 
                 onChange={onChange} 
-                className="w-full bg-white border border-cocoa-brown/10 rounded-xl py-3 px-4 text-sm text-cocoa-brown focus:border-rose-gold outline-none appearance-none cursor-pointer transition-all"
+                className="w-full bg-cream border border-cocoa-brown/10 rounded-xl py-3 px-4 text-sm text-cocoa-brown focus:border-rose-gold outline-none appearance-none cursor-pointer transition-all"
             >
                 {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
             </select>

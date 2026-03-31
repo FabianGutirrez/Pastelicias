@@ -12,10 +12,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onCustomizeClick }) 
     return (
         <motion.div 
             whileHover={{ y: -12 }}
-            className="group bg-cream/30 rounded-[2.5rem] flex flex-col border border-blush-pink/10 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.1)] hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] transition-all duration-500"
+            className="group bg-cream/30 rounded-[1.5rem] sm:rounded-[2.5rem] flex flex-col border border-blush-pink/10 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.1)] hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] transition-all duration-500"
         >
             {/* Image Container */}
-            <div className="relative h-40 sm:h-56 overflow-hidden rounded-t-[2.5rem] flex-shrink-0">
+            <div className="relative h-44 sm:h-56 overflow-hidden rounded-t-[1.5rem] sm:rounded-t-[2.5rem] flex-shrink-0">
                 <motion.img 
                     whileHover={{ scale: 1.1 }}
                     transition={{ duration: 0.8 }}
@@ -25,17 +25,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onCustomizeClick }) 
                 />
                 
                 {/* Status Badge */}
-                <div className="absolute top-4 right-4 z-10">
-                    <div className={`backdrop-blur-md px-4 py-1.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest text-white shadow-lg flex items-center gap-2 ${product.inStock ? 'bg-green-500/80' : 'bg-red-500/80'}`}>
-                        <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${product.inStock ? 'bg-white' : 'bg-white'}`} />
+                <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10">
+                    <div className={`backdrop-blur-md px-3 py-1 sm:px-4 sm:py-1.5 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-white shadow-lg flex items-center gap-1.5 sm:gap-2 ${product.inStock ? 'bg-green-500/80' : 'bg-red-500/80'}`}>
+                        <div className={`w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full animate-pulse ${product.inStock ? 'bg-cream' : 'bg-cream'}`} />
                         {product.inStock ? 'Disponible' : 'Agotado'}
                     </div>
                 </div>
 
                 {/* Category Badge */}
-                <div className="absolute top-4 left-4 z-10">
-                    <div className="bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-2xl text-[10px] font-bold uppercase tracking-widest text-cocoa-brown shadow-lg flex items-center gap-2">
-                        <Sparkles className="w-3 h-3 text-rose-gold" />
+                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
+                    <div className="bg-cream/90 backdrop-blur-md px-3 py-1 sm:px-4 sm:py-1.5 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-cocoa-brown shadow-lg flex items-center gap-1.5 sm:gap-2">
+                        <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-rose-gold" />
                         {product.category}
                     </div>
                 </div>
@@ -49,7 +49,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onCustomizeClick }) 
                         animate={{ scale: 1, opacity: 1 }}
                         onClick={() => onCustomizeClick(product)}
                         disabled={!product.inStock}
-                        className="bg-white text-cocoa-brown p-4 rounded-full shadow-2xl hover:bg-rose-gold hover:text-white transition-all"
+                        className="bg-cream text-cocoa-brown p-4 rounded-full shadow-2xl hover:bg-rose-gold hover:text-white transition-all"
                     >
                         <Plus className="w-6 h-6" />
                     </motion.button>

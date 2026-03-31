@@ -25,17 +25,17 @@ const CategorySection: React.FC<CategorySectionProps> = ({ title, products, onCu
         <motion.section 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8, delay: index * 0.2 }}
-            className="space-y-12"
+            className="space-y-8 sm:space-y-12"
         >
-            <div className="flex flex-col items-center space-y-4">
-                <div className="flex items-center gap-4">
-                    <div className="w-12 h-px bg-rose-gold/30" />
-                    <span className="text-rose-gold font-bold tracking-[0.2em] uppercase text-xs">Categoría</span>
-                    <div className="w-12 h-px bg-rose-gold/30" />
+            <div className="flex flex-col items-center space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-8 sm:w-12 h-px bg-rose-gold/30" />
+                    <span className="text-rose-gold font-bold tracking-[0.2em] uppercase text-[10px] sm:text-xs">Categoría</span>
+                    <div className="w-8 sm:w-12 h-px bg-rose-gold/30" />
                 </div>
-                <h2 className="text-4xl md:text-5xl font-serif font-bold text-cocoa-brown text-center">{title}</h2>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-cocoa-brown text-center">{title}</h2>
             </div>
 
             <motion.div 
@@ -51,7 +51,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({ title, products, onCu
                         }
                     }
                 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-10"
             >
                 {products.map(product => (
                     <motion.div
@@ -82,7 +82,7 @@ const CatalogPage: React.FC<CatalogPageProps> = ({ products, onCustomizeClick })
     ];
 
     return (
-        <div id="catalog" className="space-y-32 py-12">
+        <div id="catalog" className="space-y-20 sm:space-y-32 py-8 sm:py-12">
             {categories.map((cat, idx) => (
                 <CategorySection 
                     key={cat.title} 

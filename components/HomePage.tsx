@@ -12,9 +12,9 @@ interface HomePageProps {
 
 const HomePage: React.FC<HomePageProps> = ({ products, onCustomizeClick }) => {
     return (
-        <div className="space-y-24 pb-20">
+        <div className="space-y-16 sm:space-y-24 pb-20">
             {/* Hero Banner */}
-            <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden rounded-[3rem] shadow-2xl mx-4 sm:mx-0">
+            <section className="relative min-h-[70vh] sm:min-h-[85vh] flex items-center justify-center overflow-hidden rounded-[2rem] sm:rounded-[3rem] shadow-2xl mx-4 sm:mx-0">
                 {/* Background Image with Parallax-like effect */}
                 <motion.div 
                     initial={{ scale: 1.1 }}
@@ -60,12 +60,12 @@ const HomePage: React.FC<HomePageProps> = ({ products, onCustomizeClick }) => {
                             />
                         </div>
 
-                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white leading-[1.1] drop-shadow-2xl">
+                        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white leading-[1.1] drop-shadow-2xl">
                             Momentos <br />
                             <span className="text-rose-gold italic">Inolvidables</span>
                         </h1>
 
-                        <p className="text-lg md:text-2xl text-cream/90 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md">
+                        <p className="text-base sm:text-lg md:text-2xl text-cream/90 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md">
                             Creamos experiencias dulces personalizadas para tus celebraciones más especiales. Calidad premium en cada bocado.
                         </p>
 
@@ -74,7 +74,7 @@ const HomePage: React.FC<HomePageProps> = ({ products, onCustomizeClick }) => {
                                 whileHover={{ scale: 1.05, y: -5 }}
                                 whileTap={{ scale: 0.95 }}
                                 href="#catalog" 
-                                className="group bg-rose-gold text-cocoa-brown font-bold py-4 px-10 rounded-2xl hover:bg-white transition-all duration-500 shadow-2xl shadow-rose-gold/30 flex items-center gap-3"
+                                className="group bg-rose-gold text-cocoa-brown font-bold py-4 px-10 rounded-2xl hover:bg-cream transition-all duration-500 shadow-2xl shadow-rose-gold/30 flex items-center gap-3"
                             >
                                 Explorar Catálogo
                                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -104,19 +104,19 @@ const HomePage: React.FC<HomePageProps> = ({ products, onCustomizeClick }) => {
             </section>
 
             {/* Features Section */}
-            <section className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
+            <section className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12">
                 <FeatureCard 
-                    icon={<Star className="w-8 h-8" />}
+                    icon={<Star className="w-6 h-6 sm:w-8 sm:h-8" />}
                     title="Calidad Premium"
                     description="Ingredientes seleccionados de la más alta calidad para un sabor excepcional."
                 />
                 <FeatureCard 
-                    icon={<Heart className="w-8 h-8" />}
+                    icon={<Heart className="w-6 h-6 sm:w-8 sm:h-8" />}
                     title="Hecho con Amor"
                     description="Cada pedido es preparado artesanalmente con dedicación y cuidado."
                 />
                 <FeatureCard 
-                    icon={<Sparkles className="w-8 h-8" />}
+                    icon={<Sparkles className="w-6 h-6 sm:w-8 sm:h-8" />}
                     title="Personalización"
                     description="Adaptamos cada detalle a tu gusto para que tu evento sea único."
                 />
@@ -124,24 +124,24 @@ const HomePage: React.FC<HomePageProps> = ({ products, onCustomizeClick }) => {
 
             {/* Products Section */}
             <section id="products" className="container mx-auto px-6">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-2 text-rose-gold font-bold uppercase tracking-widest text-xs">
-                            <div className="w-8 h-px bg-rose-gold" />
+                <div className="flex flex-col md:flex-row justify-between items-end mb-10 sm:mb-16 gap-6">
+                    <div className="space-y-3 sm:space-y-4">
+                        <div className="flex items-center gap-2 text-rose-gold font-bold uppercase tracking-widest text-[10px] sm:text-xs">
+                            <div className="w-6 sm:w-8 h-px bg-rose-gold" />
                             Nuestras Delicias
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-serif font-bold text-cocoa-brown">Productos Destacados</h2>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-cocoa-brown">Productos Destacados</h2>
                     </div>
-                    <a href="#catalog" className="text-muted-mauve hover:text-rose-gold font-bold flex items-center gap-2 transition-colors group">
+                    <a href="#catalog" className="text-sm sm:text-base text-muted-mauve hover:text-rose-gold font-bold flex items-center gap-2 transition-colors group">
                         Ver todo el catálogo
-                        <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                     </a>
                 </div>
 
                 <motion.div 
                     initial="hidden"
                     whileInView="visible"
-                    viewport={{ once: true, margin: "-100px" }}
+                    viewport={{ once: true, margin: "-50px" }}
                     variants={{
                         hidden: { opacity: 0 },
                         visible: {
@@ -151,7 +151,7 @@ const HomePage: React.FC<HomePageProps> = ({ products, onCustomizeClick }) => {
                             }
                         }
                     }}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10"
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-10"
                 >
                     {products.map(product => (
                         <motion.div
@@ -173,13 +173,13 @@ const HomePage: React.FC<HomePageProps> = ({ products, onCustomizeClick }) => {
 const FeatureCard: React.FC<{icon: React.ReactNode, title: string, description: string}> = ({ icon, title, description }) => (
     <motion.div 
         whileHover={{ y: -10 }}
-        className="text-center space-y-4 p-8 rounded-[2rem] bg-cream/10 border border-blush-pink/10 hover:bg-cream/40 hover:shadow-xl transition-all duration-500"
+        className="text-center space-y-4 p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] bg-cream/10 border border-blush-pink/10 hover:bg-cream/40 hover:shadow-xl transition-all duration-500"
     >
-        <div className="w-16 h-16 bg-rose-gold/10 rounded-2xl flex items-center justify-center text-rose-gold mx-auto shadow-inner">
+        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-rose-gold/10 rounded-2xl flex items-center justify-center text-rose-gold mx-auto shadow-inner">
             {icon}
         </div>
-        <h3 className="text-xl font-serif font-bold text-cocoa-brown">{title}</h3>
-        <p className="text-muted-mauve font-light leading-relaxed">{description}</p>
+        <h3 className="text-lg sm:text-xl font-serif font-bold text-cocoa-brown">{title}</h3>
+        <p className="text-sm sm:text-base text-muted-mauve font-light leading-relaxed">{description}</p>
     </motion.div>
 );
 
