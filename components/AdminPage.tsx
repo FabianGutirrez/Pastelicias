@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { Product, CustomizationCollection, AnalyticsEvent, UserRole } from '../types';
+import { Product, CustomizationCollection, AnalyticsEvent, UserRole, DeliveryZone } from '../types';
 import { supabase } from '../supabase';
 import NotificationModal from './NotificationModal';
 import ConfirmationModal from './ConfirmationModal';
-import { CheckCircle2, Plus, Edit2, LayoutDashboard, Package, Settings, Sliders, Image as ImageIcon, X, Trash } from 'lucide-react';
+import { CheckCircle2, Plus, Edit2, LayoutDashboard, Package, Settings, Sliders, Image as ImageIcon, X, Trash, MapPin } from 'lucide-react';
 import AnalyticsDashboard from './AnalyticsDashboard';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -12,10 +12,12 @@ import { motion, AnimatePresence } from 'motion/react';
 interface AdminPageProps {
     products: Product[];
     customizationOptions: CustomizationCollection;
+    deliveryZones: DeliveryZone[];
     onAddProduct: (product: Omit<Product, 'id'>) => void;
     onUpdateProduct: (product: Product) => void;
     onDeleteProduct: (productId: number) => void;
     onUpdateCustomizationOptions: (newOptions: CustomizationCollection) => void;
+    onUpdateDeliveryZones: (newZones: DeliveryZone[]) => void;
     analyticsData: AnalyticsEvent[];
     currentUserRole: UserRole;
     siteLogo: string;
@@ -36,7 +38,7 @@ const emptyProduct: Omit<Product, 'id'> = {
     selectableProducts: { productIds: [], maxSelections: 0 },
 };
 
-type AdminTab = 'analytics' | 'products' | 'options' | 'settings';
+type AdminTab = 'analytics' | 'products' | 'options' | 'settings' | 'delivery';
 
 const PromoStep: React.FC<{number: string, text: string}> = ({ number, text }) => (
     <div className="flex items-start gap-4">
@@ -50,10 +52,12 @@ const PromoStep: React.FC<{number: string, text: string}> = ({ number, text }) =
 const AdminPage: React.FC<AdminPageProps> = ({ 
     products, 
     customizationOptions,
+    deliveryZones,
     onAddProduct,
     onUpdateProduct,
     onDeleteProduct,
     onUpdateCustomizationOptions,
+    onUpdateDeliveryZones,
     analyticsData,
     currentUserRole,
     siteLogo,
@@ -63,6 +67,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
     const [editingProduct, setEditingProduct] = useState<Product | Omit<Product, 'id'> | null>(null);
     const [formState, setFormState] = useState<Product | Omit<Product, 'id'>>(emptyProduct);
     const [newOptions, setNewOptions] = useState<Record<keyof CustomizationCollection, string>>({ flavors: '', fillings: '', colors: '' });
+    const [newZone, setNewZone] = useState({ name: '', price: '' });
     const [newLogoPreview, setNewLogoPreview] = useState<string | null>(null);
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [isUploading, setIsUploading] = useState(false);
@@ -278,6 +283,18 @@ const AdminPage: React.FC<AdminPageProps> = ({
         onUpdateCustomizationOptions(updatedOptions);
     };
 
+    const handleAddZone = () => {
+        if (!newZone.name.trim() || !newZone.price) return;
+        const updated = [...deliveryZones, { id: Date.now().toString(), name: newZone.name, price: Number(newZone.price) }];
+        onUpdateDeliveryZones(updated);
+        setNewZone({ name: '', price: '' });
+    };
+
+    const handleDeleteZone = (id: string) => {
+        const updated = deliveryZones.filter(z => z.id !== id);
+        onUpdateDeliveryZones(updated);
+    };
+
     return (
         <section id="admin" className="space-y-8">
             <NotificationModal 
@@ -313,6 +330,12 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     onClick={() => setActiveTab('products')} 
                     icon={<Package className="w-5 h-5" />}
                 />
+                <TabButton 
+                    title="Entregas" 
+                    isActive={activeTab === 'delivery'} 
+                    onClick={() => setActiveTab('delivery')} 
+                    icon={<MapPin className="w-5 h-5" />}
+                />
                 {currentUserRole === 'superadmin' && (
                     <>
                         <TabButton 
@@ -342,6 +365,83 @@ const AdminPage: React.FC<AdminPageProps> = ({
                 >
                     {activeTab === 'analytics' && <AnalyticsDashboard data={analyticsData} products={products} />}
                     
+                    {activeTab === 'delivery' && (
+                        <div className="space-y-8">
+                            <div className="space-y-1">
+                                <h3 className="text-2xl sm:text-3xl font-serif font-bold text-cocoa-brown">Tarifas de Entrega</h3>
+                                <p className="text-muted-mauve/60 text-xs sm:text-sm">Gestiona las zonas de despacho y sus respectivos costos.</p>
+                            </div>
+
+                            <div className="bg-cream p-6 sm:p-10 rounded-[1.5rem] sm:rounded-[3rem] shadow-xl shadow-cocoa-brown/5 border border-blush-pink/10">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* Add New Zone */}
+                                    <div className="space-y-6">
+                                        <h4 className="text-lg font-bold text-cocoa-brown flex items-center gap-2">
+                                            <Plus className="w-5 h-5 text-rose-gold" />
+                                            Añadir Nueva Zona
+                                        </h4>
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-muted-mauve uppercase tracking-widest">Nombre de la Zona / Comuna</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={newZone.name}
+                                                    onChange={e => setNewZone(p => ({...p, name: e.target.value}))}
+                                                    placeholder="Ej: Providencia, Santiago Centro..."
+                                                    className="w-full bg-cream/50 border-2 border-blush-pink/20 rounded-xl py-3 px-4 text-cocoa-brown focus:border-rose-gold outline-none transition-all"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-muted-mauve uppercase tracking-widest">Costo de Envío ($)</label>
+                                                <input 
+                                                    type="number" 
+                                                    value={newZone.price}
+                                                    onChange={e => setNewZone(p => ({...p, price: e.target.value}))}
+                                                    placeholder="Ej: 3500"
+                                                    className="w-full bg-cream/50 border-2 border-blush-pink/20 rounded-xl py-3 px-4 text-cocoa-brown focus:border-rose-gold outline-none transition-all"
+                                                />
+                                            </div>
+                                            <button 
+                                                onClick={handleAddZone}
+                                                className="w-full bg-rose-gold text-white font-bold py-3 rounded-xl hover:bg-rose-gold/80 transition-all shadow-lg shadow-rose-gold/20"
+                                            >
+                                                Añadir Zona
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Zone List */}
+                                    <div className="space-y-6">
+                                        <h4 className="text-lg font-bold text-cocoa-brown flex items-center gap-2">
+                                            <MapPin className="w-5 h-5 text-rose-gold" />
+                                            Zonas Configuradas
+                                        </h4>
+                                        <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                            {deliveryZones.length === 0 ? (
+                                                <p className="text-muted-mauve/60 text-sm italic">No hay zonas configuradas.</p>
+                                            ) : (
+                                                deliveryZones.map(zone => (
+                                                    <div key={zone.id} className="flex items-center justify-between p-4 bg-cream/30 border border-blush-pink/10 rounded-xl group hover:border-rose-gold/30 transition-all">
+                                                        <div>
+                                                            <p className="font-bold text-cocoa-brown">{zone.name}</p>
+                                                            <p className="text-sm text-rose-gold font-bold">${zone.price.toLocaleString('es-CL')}</p>
+                                                        </div>
+                                                        <button 
+                                                            onClick={() => handleDeleteZone(zone.id)}
+                                                            className="p-2 text-muted-mauve/40 hover:text-red-500 hover:bg-red-50 transition-all rounded-lg"
+                                                        >
+                                                            <Trash className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {activeTab === 'products' && (
                         <div className="space-y-8">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">

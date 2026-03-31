@@ -2,25 +2,27 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Trash2, ShoppingBag, Phone, User, MapPin, Calendar, MessageSquare, ChevronRight, AlertCircle } from 'lucide-react';
-import { CartItem, OrderDetails } from '../types';
+import { CartItem, OrderDetails, DeliveryZone } from '../types';
 import { WhatsappIcon } from './icons/WhatsappIcon';
 
 interface CartSidebarProps {
     isOpen: boolean;
     onClose: () => void;
     cartItems: CartItem[];
+    deliveryZones: DeliveryZone[];
     onRemoveItem: (itemId: string) => void;
     onConfirmOrder: (orderDetails: OrderDetails) => void;
     cartItemCount: number;
 }
 
-const DELIVERY_SHIPPING_COST = 5000;
 const YOUR_WHATSAPP_NUMBER = "56912345678"; // IMPORTANTE: Reemplazar con tu número de WhatsApp con código de país.
 
-const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, onRemoveItem, onConfirmOrder, cartItemCount }) => {
+const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, deliveryZones, onRemoveItem, onConfirmOrder, cartItemCount }) => {
     const [deliveryType, setDeliveryType] = useState<'pickup' | 'delivery'>('pickup');
     const [customerName, setCustomerName] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
+    const [customerAddress, setCustomerAddress] = useState('');
+    const [selectedZoneId, setSelectedZoneId] = useState<string>('');
     const [deliveryDate, setDeliveryDate] = useState(new Date().toISOString().split('T')[0]);
     const [specialInstructions, setSpecialInstructions] = useState('');
     const [error, setError] = useState('');
@@ -36,7 +38,15 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
         }
     }, [isOpen, onClose]);
     
-    const shippingCost = useMemo(() => deliveryType === 'delivery' ? DELIVERY_SHIPPING_COST : 0, [deliveryType]);
+    const selectedZone = useMemo(() => 
+        deliveryZones.find(z => z.id === selectedZoneId), 
+        [deliveryZones, selectedZoneId]
+    );
+
+    const shippingCost = useMemo(() => 
+        deliveryType === 'delivery' ? (selectedZone?.price || 0) : 0, 
+        [deliveryType, selectedZone]
+    );
     const subtotal = useMemo(() => cartItems.reduce((total, item) => total + item.selectedTier.price, 0), [cartItems]);
     const total = useMemo(() => subtotal + shippingCost, [subtotal, shippingCost]);
     
@@ -57,6 +67,14 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
         message += `\n*TOTAL:* *$${total.toLocaleString('es-CL')}*\n`;
         message += `\n*DETALLES DE ENTREGA:*`;
         message += `\n- *Tipo:* ${deliveryType === 'pickup' ? 'Retiro en Tienda' : 'Entrega a Domicilio'}`;
+        if (deliveryType === 'delivery') {
+            if (selectedZone) {
+                message += `\n- *Zona:* ${selectedZone.name}`;
+            }
+            if (customerAddress) {
+                message += `\n- *Dirección:* ${customerAddress}`;
+            }
+        }
         message += `\n- *Fecha:* ${deliveryDate}`;
         if (specialInstructions) {
             message += `\n- *Instrucciones:* ${specialInstructions}`;
@@ -74,6 +92,18 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
             setError('Por favor, completa tu nombre y teléfono.');
             return;
         }
+
+        if (deliveryType === 'delivery') {
+            if (!selectedZoneId) {
+                setError('Por favor, selecciona una zona de despacho.');
+                return;
+            }
+            if (!customerAddress.trim()) {
+                setError('Por favor, ingresa la dirección para el despacho.');
+                return;
+            }
+        }
+
         setError('');
 
         const orderDetails: OrderDetails = {
@@ -81,6 +111,8 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
             total,
             customerName,
             customerPhone,
+            customerAddress: deliveryType === 'delivery' ? customerAddress : undefined,
+            deliveryZone: deliveryType === 'delivery' ? selectedZone?.name : undefined,
             deliveryType,
             deliveryDate,
             specialInstructions,
@@ -92,6 +124,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
         
         const whatsappUrl = `https://wa.me/${YOUR_WHATSAPP_NUMBER}?text=${generateWhatsAppMessage()}`;
         window.open(whatsappUrl, '_blank');
+        onClose();
     };
 
     return (
@@ -182,8 +215,55 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
                                             </div>
                                             <div className="grid grid-cols-1 gap-3">
                                                 <RadioOption id="pickup" name="deliveryType" value="pickup" checked={deliveryType === 'pickup'} onChange={() => setDeliveryType('pickup')} label="Retiro en Tienda" cost="$0" />
-                                                <RadioOption id="delivery" name="deliveryType" value="delivery" checked={deliveryType === 'delivery'} onChange={() => setDeliveryType('delivery')} label="Entrega a Domicilio" cost={`$${DELIVERY_SHIPPING_COST.toLocaleString('es-CL')}`} />
+                                                <RadioOption id="delivery" name="deliveryType" value="delivery" checked={deliveryType === 'delivery'} onChange={() => setDeliveryType('delivery')} label="Entrega a Domicilio" cost={selectedZone ? `$${selectedZone.price.toLocaleString('es-CL')}` : 'Selecciona zona'} />
                                             </div>
+                                            
+                                            <AnimatePresence>
+                                                {deliveryType === 'delivery' && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        className="overflow-hidden space-y-4"
+                                                    >
+                                                        <div className="flex items-center gap-2 text-cocoa-brown font-bold font-serif text-lg pt-2">
+                                                            <MapPin className="w-5 h-5 text-rose-gold" />
+                                                            <h3>Zona de Despacho</h3>
+                                                        </div>
+                                                        <div className="relative group">
+                                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-mauve/40 group-focus-within:text-rose-gold transition-colors">
+                                                                <MapPin className="w-4 h-4" />
+                                                            </div>
+                                                            <select 
+                                                                value={selectedZoneId}
+                                                                onChange={(e) => setSelectedZoneId(e.target.value)}
+                                                                className="w-full bg-cream/20 border-2 border-blush-pink/30 rounded-2xl py-4 pl-14 pr-6 text-cocoa-brown focus:border-rose-gold focus:ring-4 focus:ring-rose-gold/10 transition-all outline-none appearance-none cursor-pointer"
+                                                            >
+                                                                <option value="">Selecciona una zona...</option>
+                                                                {deliveryZones.map(zone => (
+                                                                    <option key={zone.id} value={zone.id}>
+                                                                        {zone.name} (${zone.price.toLocaleString('es-CL')})
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-muted-mauve/40">
+                                                                <ChevronRight className="w-4 h-4 rotate-90" />
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-2 text-cocoa-brown font-bold font-serif text-lg pt-2">
+                                                            <MapPin className="w-5 h-5 text-rose-gold" />
+                                                            <h3>Dirección de Despacho</h3>
+                                                        </div>
+                                                        <SidebarInput 
+                                                            icon={<MapPin className="w-4 h-4" />} 
+                                                            placeholder="Calle, número, depto/casa *" 
+                                                            value={customerAddress} 
+                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomerAddress(e.target.value)} 
+                                                        />
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
                                         </div>
 
                                         <div className="space-y-4">

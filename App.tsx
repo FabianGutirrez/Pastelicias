@@ -1,6 +1,7 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
-import { Product, CartItem, CustomizationOptions, CustomizationCollection, UserRole, AnalyticsEvent, OrderDetails } from './types';
-import { INITIAL_PRODUCTS, INITIAL_CUSTOMIZATION_OPTIONS } from './constants';
+import { Product, CartItem, CustomizationOptions, CustomizationCollection, UserRole, AnalyticsEvent, OrderDetails, DeliveryZone } from './types';
+import { INITIAL_PRODUCTS, INITIAL_CUSTOMIZATION_OPTIONS, INITIAL_DELIVERY_ZONES } from './constants';
 import { supabase } from './supabase';
 import Header from './components/Header';
 import ProductModal from './components/ProductModal';
@@ -17,13 +18,14 @@ import { FacebookIcon } from './components/icons/FacebookIcon';
 import { WhatsappIcon } from './components/icons/WhatsappIcon';
 import { logoBase64 } from './assets/logo';
 
-// Generador de IDs para la sesión
+// Simple ID generator to ensure uniqueness during the session
 let lastId = INITIAL_PRODUCTS.reduce((max, p) => Math.max(max, p.id), 0);
 const generateUniqueId = () => ++lastId;
 
 const App: React.FC = () => {
     const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
     const [customizationOptions, setCustomizationOptions] = useState<CustomizationCollection>(INITIAL_CUSTOMIZATION_OPTIONS);
+    const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>(INITIAL_DELIVERY_ZONES);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -32,6 +34,7 @@ const App: React.FC = () => {
     const [siteLogo, setSiteLogo] = useState<string>(logoBase64);
     const [confirmedOrder, setConfirmedOrder] = useState<OrderDetails | null>(null);
     
+    // Default role is 'customer'. Login is only for admin roles.
     const [currentUserRole, setCurrentUserRole] = useState<UserRole>('customer');
     const [analyticsData, setAnalyticsData] = useState<AnalyticsEvent[]>([]);
     const [isLoadingAuth, setIsLoadingAuth] = useState(true);
@@ -46,41 +49,27 @@ const App: React.FC = () => {
         setToast({ isVisible: true, message, type });
     };
 
-    // EFECTO PRINCIPAL: Carga de Sesión y Configuración Global
     useEffect(() => {
-        const loadInitialData = async () => {
-            try {
-                // 1. Verificar Sesión de Usuario
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session?.user) {
-                    const role = (session.user.user_metadata?.role as UserRole) || 'customer';
-                    setCurrentUserRole(role);
-                } else {
-                    setCurrentUserRole('customer');
+        // Check current session
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                // In a real app, you'd fetch the role from a 'profiles' table.
+                // For this prototype, we'll check user_metadata.
+                const role = (session.user.user_metadata?.role as UserRole) || 'customer';
+                setCurrentUserRole(role);
+                if (session.user.user_metadata?.siteLogo) {
+                    setSiteLogo(session.user.user_metadata.siteLogo);
                 }
-
-                // 2. Cargar Logo desde Tabla Pública (Persistencia Real)
-                const { data: configData, error: configError } = await supabase
-                    .from('configuracion')
-                    .select('logo_url')
-                    .eq('id', 1)
-                    .single();
-
-                if (configData?.logo_url) {
-                    setSiteLogo(configData.logo_url);
-                } else if (configError) {
-                    console.warn("No se encontró registro en 'configuracion', usando logo por defecto.");
-                }
-            } catch (err) {
-                console.error("Error en la carga inicial:", err);
-            } finally {
-                setIsLoadingAuth(false);
+            } else {
+                setCurrentUserRole('customer');
             }
+            setIsLoadingAuth(false);
         };
 
-        loadInitialData();
+        checkSession();
 
-        // Escuchar cambios en la autenticación
+        // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             if (session?.user) {
                 const role = (session.user.user_metadata?.role as UserRole) || 'customer';
@@ -93,27 +82,19 @@ const App: React.FC = () => {
         return () => subscription.unsubscribe();
     }, []);
 
-    // FUNCIÓN CORREGIDA: Actualizar Logo en toda la plataforma
-    const handleUpdateLogo = async (newLogoUrl: string) => {
-        // Actualización visual inmediata
-        setSiteLogo(newLogoUrl);
-        
-        try {
-            // Guardar en la tabla pública para que todos lo vean
-            const { error } = await supabase
-                .from('configuracion')
-                .update({ logo_url: newLogoUrl })
-                .eq('id', 1);
-
-            if (error) throw error;
-            showToast('Logo actualizado globalmente', 'success');
-        } catch (error: any) {
-            console.error("Error al persistir logo:", error.message);
-            showToast('Error al guardar en la base de datos', 'error');
+    const handleUpdateLogo = async (newLogo: string) => {
+        setSiteLogo(newLogo);
+        // Save logo URL to user metadata for persistence
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            await supabase.auth.updateUser({
+                data: { siteLogo: newLogo }
+            });
         }
     };
 
     const handleLogin = (_role: UserRole) => {
+        // Role is now handled by Supabase onAuthStateChanged
         window.location.hash = '#admin'; 
     };
 
@@ -130,7 +111,7 @@ const App: React.FC = () => {
     useEffect(() => {
         const handleHashChange = () => {
             setPage(window.location.hash || '#');
-            setIsMenuOpen(false);
+            setIsMenuOpen(false); // Close menu on navigation
         };
         window.addEventListener('hashchange', handleHashChange);
         return () => window.removeEventListener('hashchange', handleHashChange);
@@ -198,26 +179,39 @@ const App: React.FC = () => {
     const handleUpdateCustomizationOptions = (newOptions: CustomizationCollection) => {
         setCustomizationOptions(newOptions);
     };
+    const handleUpdateDeliveryZones = (newZones: DeliveryZone[]) => {
+        setDeliveryZones(newZones);
+    };
 
     const renderPage = () => {
-        if (page === '#admin' && currentUserRole === 'customer') {
-            window.location.hash = '#login';
-            return <LoginScreen onLogin={handleLogin} />;
+        // Access Control: Only admin and superadmin can access #admin
+        if (page === '#admin') {
+            if (currentUserRole === 'customer') {
+                // If not logged in or role is customer, redirect to login
+                window.location.hash = '#login';
+                return <LoginScreen onLogin={handleLogin} />;
+            }
         }
         
         switch (page) {
-            case '#login': return <LoginScreen onLogin={handleLogin} />;
-            case '#catalog': return <CatalogPage products={products} onCustomizeClick={handleSelectProduct} />;
-            case '#contact': return <ContactPage />;
-            case '#confirmation': return <ConfirmationPage orderDetails={confirmedOrder} />;
+            case '#login':
+                return <LoginScreen onLogin={handleLogin} />;
+            case '#catalog':
+                return <CatalogPage products={products} onCustomizeClick={handleSelectProduct} />;
+            case '#contact':
+                return <ContactPage />;
+            case '#confirmation':
+                return <ConfirmationPage orderDetails={confirmedOrder} />;
             case '#admin':
                 return <AdminPage 
                             products={products}
                             customizationOptions={customizationOptions}
+                            deliveryZones={deliveryZones}
                             onAddProduct={handleAddProduct}
                             onUpdateProduct={handleUpdateProduct}
                             onDeleteProduct={handleDeleteProduct}
                             onUpdateCustomizationOptions={handleUpdateCustomizationOptions}
+                            onUpdateDeliveryZones={handleUpdateDeliveryZones}
                             analyticsData={analyticsData}
                             currentUserRole={currentUserRole}
                             siteLogo={siteLogo}
@@ -256,29 +250,42 @@ const App: React.FC = () => {
             <footer className="bg-blush-pink mt-16">
                 <div className="container mx-auto px-6 py-12">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {/* Column 1: About */}
                         <div className="flex flex-col items-center md:items-start text-center md:text-left">
                             <img src={siteLogo} alt="Pastelicias Logo" className="h-20 w-auto mb-4" />
                             <p className="text-cocoa-brown/80">Repostería de diseño para tus momentos más especiales.</p>
                         </div>
+                        
+                        {/* Column 2: Links */}
                         <div className="text-center">
                             <h4 className="font-bold font-serif text-cocoa-brown mb-3">Navegación</h4>
                             <nav className="flex flex-col space-y-2 text-cocoa-brown/90">
-                                <a href="#" className="hover:underline">Inicio</a>
-                                <a href="#catalog" className="hover:underline">Catálogo</a>
-                                <a href="#contact" className="hover:underline">Contacto</a>
+                                <a href="#" className="hover:underline hover:text-cocoa-brown">Inicio</a>
+                                <a href="#catalog" className="hover:underline hover:text-cocoa-brown">Catálogo</a>
+                                <a href="#contact" className="hover:underline hover:text-cocoa-brown">Contacto</a>
                             </nav>
                         </div>
+
+                        {/* Column 3: Social */}
                         <div className="text-center md:text-right">
                              <h4 className="font-bold font-serif text-cocoa-brown mb-3">Síguenos</h4>
                              <div className="flex justify-center md:justify-end space-x-4">
-                                 <a href="#" className="text-cocoa-brown hover:text-muted-mauve transition-colors"><InstagramIcon /></a>
-                                 <a href="https://www.facebook.com/profile.php?id=100063743610519&locale=es_LA" className="text-cocoa-brown hover:text-muted-mauve transition-colors"><FacebookIcon /></a>
-                                 <a href="#" className="text-cocoa-brown hover:text-muted-mauve transition-colors"><WhatsappIcon /></a>
+                                 <a href="#" aria-label="Instagram" className="text-cocoa-brown hover:text-muted-mauve transition-colors">
+                                    <InstagramIcon />
+                                 </a>
+                                 <a href="#" aria-label="Facebook" className="text-cocoa-brown hover:text-muted-mauve transition-colors">
+                                    <FacebookIcon />
+                                 </a>
+                                 <a href="#" aria-label="WhatsApp" className="text-cocoa-brown hover:text-muted-mauve transition-colors">
+                                    <WhatsappIcon />
+                                 </a>
                              </div>
                         </div>
                     </div>
+
+                    {/* Bottom Bar */}
                     <div className="mt-12 pt-8 border-t border-rose-gold/50 text-center text-cocoa-brown/70 text-sm">
-                         <p>&copy; 2026 Pastelicias. Todos los derechos reservados.</p>
+                         <p>&copy; 2024 Pastelicias. Todos los derechos reservados.</p>
                     </div>
                 </div>
             </footer>
@@ -295,6 +302,7 @@ const App: React.FC = () => {
                 isOpen={isCartOpen}
                 onClose={handleToggleCart}
                 cartItems={cartItems}
+                deliveryZones={deliveryZones}
                 onRemoveItem={handleRemoveFromCart}
                 onConfirmOrder={handleConfirmOrder}
                 cartItemCount={cartItemCount}

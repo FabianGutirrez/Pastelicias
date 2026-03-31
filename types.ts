@@ -46,6 +46,12 @@ export interface CustomizationCollection {
   colors: string[];
 }
 
+export interface DeliveryZone {
+  id: string;
+  name: string;
+  price: number;
+}
+
 export type UserRole = 'customer' | 'admin' | 'superadmin';
 
 export interface AnalyticsEvent {
@@ -61,7 +67,9 @@ export interface OrderDetails {
     total: number;
     customerName: string;
     customerPhone: string;
+    customerAddress?: string;
     deliveryType: 'pickup' | 'delivery';
+    deliveryZone?: string;
     deliveryDate: string;
     specialInstructions: string;
     shippingCost: number;
