@@ -380,3 +380,11 @@ export const INITIAL_CUSTOMIZATION_OPTIONS: CustomizationCollection = {
     colors: ['Surtidos', 'Rosado Pastel', 'Azul Cielo', 'Blanco Clásico'],
 };
 
+export const INITIAL_DELIVERY_ZONES: DeliveryZone[] = [
+    { id: '1', name: 'Santiago Centro', price: 3000 },
+    { id: '2', name: 'Providencia', price: 3500 },
+    { id: '3', name: 'Las Condes', price: 5000 },
+    { id: '4', name: 'Vitacura', price: 5500 },
+    { id: '5', name: 'Ñuñoa', price: 4000 },
+    { id: '6', name: 'La Reina', price: 4500 },
+];
