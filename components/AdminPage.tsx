@@ -201,9 +201,11 @@ const AdminPage: React.FC<AdminPageProps> = ({
             if (publicUrl) {
                 setFormState(prev => ({ ...prev, imageUrl: publicUrl }));
             } else {
-                let message = 'Error al subir la imagen del producto.';
+                let message = `Error al subir la imagen del producto: ${error?.message || 'Error desconocido'}`;
                 if (error?.message?.includes('bucket not found') || error?.status === 404) {
                     message += '\n\nSugerencia: El bucket "images" no existe en Supabase. Créalo en Storage y hazlo público.';
+                } else if (error?.message?.includes('row-level security') || error?.status === 403) {
+                    message += '\n\nSugerencia: Error de permisos (RLS) en el Storage. Asegúrate de que el bucket "images" permita subir archivos a usuarios autenticados.';
                 }
                 setNotification({
                     isOpen: true,
