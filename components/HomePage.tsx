@@ -20,11 +20,12 @@ const HomePage: React.FC<HomePageProps> = ({ products, onCustomizeClick }) => {
                     initial={{ scale: 1.1 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 10, repeat: Infinity, repeatType: 'reverse' }}
-                    className="absolute inset-0"
+                    className="absolute inset-0 bg-cocoa-brown"
                 >
                     <img 
-                        src="https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&dpr=1" 
-                        alt="Delicious cake" 
+                        src="https://lh3.googleusercontent.com/d/1RYkVGAnrltMnynla9gwrgPkED29suw9Z" 
+                        alt="Pastelicia Hero" 
+                        referrerPolicy="no-referrer"
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-cocoa-brown/30 backdrop-blur-[2px]" />

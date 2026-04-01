@@ -294,19 +294,27 @@ const App: React.FC = () => {
     };
 
     const handleUpdateProduct = async (updatedProduct: Product) => {
+        // Optimistic update
         setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
         
         try {
+            // Destructure to remove 'id' from the update payload
+            const { id, ...updateData } = updatedProduct;
+            
+            console.log('Updating product in Supabase:', id, updateData);
+
             const { error } = await supabase
                 .from('products')
-                .update(updatedProduct)
-                .eq('id', updatedProduct.id);
+                .update(updateData)
+                .eq('id', id);
             
             if (error) throw error;
             showToast('Producto actualizado con éxito', 'success');
         } catch (error: any) {
             console.error('Error updating product in Supabase:', error);
             showToast(`Error al actualizar en la nube: ${error.message || 'Error desconocido'}`, 'error');
+            // Revert optimistic update on error
+            fetchData();
         }
     };
 

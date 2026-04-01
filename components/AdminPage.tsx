@@ -247,7 +247,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
         // Basic validation
@@ -276,12 +276,21 @@ const AdminPage: React.FC<AdminPageProps> = ({
              delete finalProductData.selectableProducts;
         }
 
-        if ('id' in finalProductData) {
-            onUpdateProduct(finalProductData as Product);
-        } else {
-            onAddProduct(finalProductData);
+        try {
+            if ('id' in finalProductData) {
+                await onUpdateProduct(finalProductData as Product);
+            } else {
+                await onAddProduct(finalProductData as Omit<Product, 'id'>);
+            }
+            setEditingProduct(null);
+        } catch (error: any) {
+            setNotification({
+                isOpen: true,
+                title: 'Error al Guardar',
+                message: error.message || 'Ocurrió un error inesperado.',
+                type: 'error'
+            });
         }
-        setEditingProduct(null);
     };
 
     const handleDelete = (productId: number) => {
