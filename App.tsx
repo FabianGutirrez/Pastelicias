@@ -545,3 +545,7 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+function fetchData() {
+    throw new Error('Function not implemented.');
+}
