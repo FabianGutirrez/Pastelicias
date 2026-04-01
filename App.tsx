@@ -23,7 +23,7 @@ const App: React.FC = () => {
     const [customizationOptions, setCustomizationOptions] = useState<CustomizationCollection>(INITIAL_CUSTOMIZATION_OPTIONS);
     const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>(INITIAL_DELIVERY_ZONES);
     const [isLoadingData, setIsLoadingData] = useState(true);
-    const [isDatabaseEmpty, setIsDatabaseEmpty] = useState(false); // Nuevo estado
+    const [isDatabaseEmpty, setIsDatabaseEmpty] = useState(false);
 
     // --- FUNCIÓN DE CARGA MASIVA (SEED) ---
     const syncConstantsToSupabase = async () => {
@@ -37,14 +37,13 @@ const App: React.FC = () => {
             
             showToast('¡Sincronización exitosa!', 'success');
             setIsDatabaseEmpty(false);
-            window.location.reload(); 
+            fetchData(); 
         } catch (error: any) {
             console.error('Error:', error);
             showToast(`Error: ${error.message}`, 'error');
         }
     };
 
-    // Fetch data from Supabase
     const fetchData = async () => {
         setIsLoadingData(true);
         try {
@@ -60,10 +59,9 @@ const App: React.FC = () => {
                 setIsDatabaseEmpty(false);
             } else {
                 setProducts(INITIAL_PRODUCTS);
-                setIsDatabaseEmpty(true); // Marcamos que la DB está vacía
+                setIsDatabaseEmpty(true);
             }
 
-            // Fetch Customizations
             const { data: customizationsData, error: customizationsError } = await supabase
                 .from('customizations')
                 .select('*')
@@ -78,7 +76,6 @@ const App: React.FC = () => {
                 });
             }
 
-            // Fetch Delivery Zones
             const { data: zonesData, error: zonesError } = await supabase
                 .from('delivery_zones')
                 .select('*')
@@ -87,7 +84,6 @@ const App: React.FC = () => {
             if (zonesError) throw zonesError;
             if (zonesData && zonesData.length > 0) setDeliveryZones(zonesData);
 
-            // Fetch Logo
             const { data: configData } = await supabase
                 .from('configuracion')
                 .select('logo_url')
@@ -107,11 +103,6 @@ const App: React.FC = () => {
         fetchData();
     }, []);
 
-    // ... (Mantengo tus funciones de ID, Cart y Auth exactamente igual)
-    const generateUniqueId = () => {
-        const maxId = products.length > 0 ? Math.max(...products.map(p => p.id)) : 0;
-        return maxId + 1;
-    };
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -130,12 +121,9 @@ const App: React.FC = () => {
     const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
     useEffect(() => {
-        localStorage.setItem('pastelicia_products', JSON.stringify(products));
-        localStorage.setItem('pastelicia_customizations', JSON.stringify(customizationOptions));
-        localStorage.setItem('pastelicia_delivery_zones', JSON.stringify(deliveryZones));
         localStorage.setItem('pastelicia_cart', JSON.stringify(cartItems));
         localStorage.setItem('pastelicia_analytics', JSON.stringify(analyticsData));
-    }, [products, customizationOptions, deliveryZones, cartItems, analyticsData]);
+    }, [cartItems, analyticsData]);
 
     const [toast, setToast] = useState<{ isVisible: boolean; message: string; type: ToastType }>({
         isVisible: false,
@@ -164,40 +152,18 @@ const App: React.FC = () => {
     }, []);
 
     const handleUpdateProduct = async (updatedProduct: Product) => {
-        // Actualización optimista
         setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
-        
         try {
-            // Usamos upsert para asegurar que si no existe lo cree, y si existe lo actualice
-            // Eliminamos campos automáticos de Postgres si existieran
             const { created_at, ...updateData }: any = updatedProduct;
-
-            const { error } = await supabase
-                .from('products')
-                .upsert(updateData, { onConflict: 'id' });
-            
+            const { error } = await supabase.from('products').upsert(updateData, { onConflict: 'id' });
             if (error) throw error;
-            showToast('Producto guardado en la nube', 'success');
+            showToast('Cambios guardados', 'success');
         } catch (error: any) {
-            console.error('Error:', error);
-            showToast(`Error al guardar: ${error.message}`, 'error');
-            fetchData(); // Revertir
+            showToast(`Error: ${error.message}`, 'error');
+            fetchData();
         }
     };
 
-    // ... (El resto de tus manejadores handleAdd, handleDelete, handleUpdateLogo permanecen igual)
-    const handleUpdateLogo = async (newLogo: string) => {
-        setSiteLogo(newLogo);
-        try {
-            const { error } = await supabase.from('configuracion').upsert({ id: 1, logo_url: newLogo });
-            if (error) throw error;
-            showToast('Logo actualizado', 'success');
-        } catch (error: any) {
-            showToast('Error logo: ' + error.message, 'error');
-        }
-    };
-
-    const handleLogin = () => { window.location.hash = '#admin'; };
     const handleLogout = async () => { await supabase.auth.signOut(); window.location.hash = '#'; };
 
     useEffect(() => {
@@ -210,48 +176,57 @@ const App: React.FC = () => {
         return () => window.removeEventListener('hashchange', handleHashChange);
     }, []);
 
-    const handleSelectProduct = (product: Product) => { setSelectedProduct(product); };
-    const handleAddToCart = (product: Product, selectedTier: any, customizations: any, selectedSubProducts?: string[]) => {
-        const newItem: CartItem = { id: `${product.id}-${Date.now()}`, product, selectedTier, customizations, selectedSubProducts };
-        setCartItems(prev => [...prev, newItem]);
-        setSelectedProduct(null);
-        showToast(`¡${product.name} añadido!`, 'success');
-    };
-
     const renderPage = () => {
         if (isLoadingData) return <div className="h-screen flex items-center justify-center text-white">Cargando...</div>;
-        
         switch (page) {
-            case '#catalog': return <CatalogPage products={products} onCustomizeClick={handleSelectProduct} />;
+            case '#catalog': return <CatalogPage products={products} onCustomizeClick={setSelectedProduct} />;
             case '#admin': return (
                 <AdminPage 
                     products={products}
                     customizationOptions={customizationOptions}
                     deliveryZones={deliveryZones}
                     onUpdateProduct={handleUpdateProduct}
-                    onDeleteProduct={(id) => {}} // Implementar según tu handleDelete
-                    onAddProduct={(p) => {}} // Implementar según tu handleAdd
-                    onUpdateCustomizationOptions={(o) => {}}
-                    onUpdateDeliveryZones={(z) => {}}
+                    onDeleteProduct={async (id) => {
+                         const { error } = await supabase.from('products').delete().eq('id', id);
+                         if (!error) setProducts(prev => prev.filter(p => p.id !== id));
+                    }}
+                    onAddProduct={async (p) => {
+                        const newId = products.length > 0 ? Math.max(...products.map(pr => pr.id)) + 1 : 1;
+                        const newP = { ...p, id: newId };
+                        const { error } = await supabase.from('products').insert([newP]);
+                        if (!error) setProducts(prev => [...prev, newP]);
+                    }}
+                    onUpdateCustomizationOptions={async (o) => {
+                        await supabase.from('customizations').upsert({ id: 1, ...o });
+                        setCustomizationOptions(o);
+                    }}
+                    onUpdateDeliveryZones={async (z) => {
+                        await supabase.from('delivery_zones').upsert(z);
+                        setDeliveryZones(z);
+                    }}
                     analyticsData={analyticsData}
                     currentUserRole={currentUserRole}
                     siteLogo={siteLogo}
-                    onUpdateLogo={handleUpdateLogo}
+                    onUpdateLogo={async (l) => {
+                        await supabase.from('configuracion').upsert({ id: 1, logo_url: l });
+                        setSiteLogo(l);
+                    }}
                 />
             );
             case '#confirmation': return <ConfirmationPage orderDetails={confirmedOrder} />;
-            default: return <HomePage products={products.filter(p => p.isFeatured)} onCustomizeClick={handleSelectProduct} />;
+            case '#contact': return <ContactPage />;
+            case '#login': return <LoginScreen onLogin={() => window.location.hash = '#admin'} />;
+            default: return <HomePage products={products.filter(p => p.isFeatured)} onCustomizeClick={setSelectedProduct} />;
         }
     };
 
     return (
         <div className="bg-cream min-h-screen text-cocoa-brown flex flex-col">
-            {/* BANNER DE SINCRONIZACIÓN - Solo aparece si la DB está vacía */}
             {isDatabaseEmpty && currentUserRole !== 'customer' && (
-                <div className="bg-rose-gold text-white p-2 text-center text-sm font-bold animate-pulse">
-                    La base de datos está vacía. 
+                <div className="bg-rose-gold text-white p-2 text-center text-sm font-bold animate-pulse z-50">
+                    Base de datos vacía. 
                     <button onClick={syncConstantsToSupabase} className="ml-3 underline bg-white/20 px-2 py-1 rounded">
-                        Subir productos de constants.ts ahora
+                        Subir productos ahora
                     </button>
                 </div>
             )}
@@ -266,11 +241,49 @@ const App: React.FC = () => {
                 currentUserRole={currentUserRole}
                 onLogout={handleLogout}
             />
+
             <main className="container mx-auto px-4 py-8 flex-grow">{renderPage()}</main>
             
-            {/* Tu Footer actual... */}
             <footer className="bg-[#1a1412] pt-20 pb-10 text-cream border-t border-rose-gold/10">
-                {/* ... (Contenido del footer que ya tienes) ... */}
+                <div className="container mx-auto px-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
+                        <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
+                            <div className="flex flex-col items-center md:items-start gap-4">
+                                <div className="w-20 h-20 bg-cream/10 backdrop-blur-md rounded-3xl p-3 border border-cream/20 shadow-2xl">
+                                    <img src={siteLogo} alt="Logo" className="w-full h-full object-contain" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-serif font-bold text-rose-gold tracking-tight">Pastelicia</h3>
+                                    <p className="text-[10px] font-bold text-cream/30 uppercase tracking-[0.3em] mt-1 italic">Excelencia en Alta Repostería</p>
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <p className="text-cream/70 leading-relaxed max-w-sm text-sm">
+                                    En <span className="text-rose-gold font-bold">Pastelicia</span>, transformamos ingredientes premium en obras de arte comestibles.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="text-center">
+                            <h4 className="text-lg font-bold font-serif text-rose-gold mb-6">Navegación</h4>
+                            <nav className="flex flex-col space-y-4 text-cream/80">
+                                <a href="#" className="hover:text-rose-gold transition-colors text-sm">Inicio</a>
+                                <a href="#catalog" className="hover:text-rose-gold transition-colors text-sm">Catálogo</a>
+                                <a href="#contact" className="hover:text-rose-gold transition-colors text-sm">Contacto</a>
+                            </nav>
+                        </div>
+                        <div className="text-center md:text-right">
+                             <h4 className="text-lg font-bold font-serif text-rose-gold mb-6">Conecta con nosotros</h4>
+                             <div className="flex justify-center md:justify-end space-x-6">
+                                 <a href="#" className="w-12 h-12 bg-cream/5 rounded-2xl flex items-center justify-center hover:bg-rose-gold transition-all border border-cream/10"><InstagramIcon /></a>
+                                 <a href="#" className="w-12 h-12 bg-cream/5 rounded-2xl flex items-center justify-center hover:bg-rose-gold transition-all border border-cream/10"><FacebookIcon /></a>
+                                 <a href="#" className="w-12 h-12 bg-cream/5 rounded-2xl flex items-center justify-center hover:bg-rose-gold transition-all border border-cream/10"><WhatsappIcon /></a>
+                             </div>
+                        </div>
+                    </div>
+                    <div className="mt-20 pt-8 border-t border-cream/5 text-center text-cream/20 text-[10px] tracking-[0.2em] uppercase font-bold">
+                         <p>&copy; {new Date().getFullYear()} Pastelicia. Todos los derechos reservados.</p>
+                    </div>
+                </div>
             </footer>
 
             {selectedProduct && (
@@ -278,7 +291,12 @@ const App: React.FC = () => {
                     product={selectedProduct} 
                     allProducts={products}
                     onClose={() => setSelectedProduct(null)}
-                    onAddToCart={handleAddToCart}
+                    onAddToCart={(p, t, c, s) => {
+                        const newItem: CartItem = { id: `${p.id}-${Date.now()}`, product: p, selectedTier: t, customizations: c, selectedSubProducts: s };
+                        setCartItems(prev => [...prev, newItem]);
+                        setSelectedProduct(null);
+                        showToast(`¡${p.name} añadido!`);
+                    }}
                     customizationOptions={customizationOptions}
                 />
             )}
@@ -288,10 +306,10 @@ const App: React.FC = () => {
                 cartItems={cartItems} 
                 deliveryZones={deliveryZones}
                 onRemoveItem={(id) => setCartItems(prev => prev.filter(i => i.id !== id))}
-                onConfirmOrder={(order) => { setConfirmedOrder(order); setCartItems([]); window.location.hash = '#confirmation'; }}
+                onConfirmOrder={(order) => { setConfirmedOrder(order); setCartItems([]); setIsCartOpen(false); window.location.hash = '#confirmation'; }}
                 cartItemCount={cartItems.length}
             />
-            <Toast {...toast} onClose={() => setToast(prev => ({ ...prev, isVisible: false }))} />
+            <Toast isVisible={toast.isVisible} message={toast.message} type={toast.type} onClose={() => setToast(prev => ({ ...prev, isVisible: false }))} />
         </div>
     );
 };
