@@ -20,9 +20,9 @@ import { WhatsappIcon } from './components/icons/WhatsappIcon';
 import { logoBase64 } from './assets/logo';
 
 const App: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+    const [products, setProducts] = useState<Product[]>([]);
     const [customizationOptions, setCustomizationOptions] = useState<CustomizationCollection>(INITIAL_CUSTOMIZATION_OPTIONS);
-    const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>(INITIAL_DELIVERY_ZONES);
+    const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
     
     const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -38,7 +38,7 @@ const App: React.FC = () => {
                     .order('id', { ascending: true });
                 
                 if (productsError) throw productsError;
-                setProducts(productsData && productsData.length > 0 ? productsData : INITIAL_PRODUCTS);
+                setProducts(productsData || []);
 
                 // Fetch Customizations
                 const { data: customizationsData, error: customizationsError } = await supabase
@@ -124,17 +124,13 @@ const App: React.FC = () => {
     const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
     // Persistence Effects
-    useEffect(() => {
-        localStorage.setItem('pastelicia_products', JSON.stringify(products));
-    }, [products]);
+
 
     useEffect(() => {
         localStorage.setItem('pastelicia_customizations', JSON.stringify(customizationOptions));
     }, [customizationOptions]);
 
-    useEffect(() => {
-        localStorage.setItem('pastelicia_delivery_zones', JSON.stringify(deliveryZones));
-    }, [deliveryZones]);
+
 
     useEffect(() => {
         localStorage.setItem('pastelicia_cart', JSON.stringify(cartItems));
