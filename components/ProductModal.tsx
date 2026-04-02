@@ -13,7 +13,7 @@ interface ProductModalProps {
 }
 
 const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClose, onAddToCart, customizationOptions }) => {
-    const [selectedTier] = useState(product.priceTiers[0]);
+    const [selectedTier, setSelectedTier] = useState(product.priceTiers[0] || { quantity: 1, price: product.price, label: 'Unidad' });
     const [selectedSubProductIds, setSelectedSubProductIds] = useState<number[]>([]);
     
     const [customizations, setCustomizations] = useState<CustomizationOptions>(() => {
@@ -106,6 +106,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
                             src={product.imageUrl} 
                             alt={product.name} 
                             className="w-full h-full object-cover" 
+                            referrerPolicy="no-referrer"
                         />
                     </div>
                 </div>
@@ -120,6 +121,34 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, allProducts, onClo
                             <p className="text-muted-mauve/80 text-xs sm:text-sm leading-relaxed mb-6 sm:mb-8 font-light">
                                 {product.longDescription || product.description}
                             </p>
+
+                            {/* Price Tiers Selection */}
+                            {product.priceTiers && product.priceTiers.length > 0 && (
+                                <div className="mb-8">
+                                    <h3 className="text-sm font-bold text-cocoa-brown/80 mb-3 ml-1 uppercase tracking-wider">Selecciona tu paquete</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        {product.priceTiers.map((tier, index) => (
+                                            <button
+                                                key={index}
+                                                type="button"
+                                                onClick={() => setSelectedTier(tier)}
+                                                className={`p-4 rounded-2xl border-2 text-left transition-all duration-300 flex flex-col gap-1 ${
+                                                    selectedTier.label === tier.label
+                                                        ? 'border-rose-gold bg-rose-gold/5 shadow-md shadow-rose-gold/10'
+                                                        : 'border-cocoa-brown/5 bg-cream hover:border-rose-gold/30'
+                                                }`}
+                                            >
+                                                <span className={`text-sm font-bold ${selectedTier.label === tier.label ? 'text-rose-gold' : 'text-cocoa-brown'}`}>
+                                                    {tier.label}
+                                                </span>
+                                                <span className="text-lg font-serif font-bold text-cocoa-brown">
+                                                    ${tier.price.toLocaleString('es-CL')}
+                                                </span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Promo Selection */}
                             {isPromoWithOptions && (

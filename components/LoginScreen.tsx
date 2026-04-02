@@ -20,7 +20,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
-    const ADMIN_REGISTRATION_CODE = 'PASTEL-2024-SEC';
+    const ADMIN_REGISTRATION_CODE = '280911'; // Código secreto para registrar cuentas administrativas
 
     const handleRoleSelect = (role: UserRole) => {
         setSelectedRole(role);

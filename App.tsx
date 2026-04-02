@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Product, CartItem, CustomizationOptions, CustomizationCollection, UserRole, AnalyticsEvent, OrderDetails, DeliveryZone } from './types';
 import { INITIAL_PRODUCTS, INITIAL_CUSTOMIZATION_OPTIONS, INITIAL_DELIVERY_ZONES } from './constants';
 import { supabase } from './supabase';
@@ -20,83 +20,83 @@ import { WhatsappIcon } from './components/icons/WhatsappIcon';
 import { logoBase64 } from './assets/logo';
 
 const App: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
     const [customizationOptions, setCustomizationOptions] = useState<CustomizationCollection>(INITIAL_CUSTOMIZATION_OPTIONS);
-    const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
+    const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>(INITIAL_DELIVERY_ZONES);
     
     const [isLoadingData, setIsLoadingData] = useState(true);
 
+    const fetchData = useCallback(async () => {
+        setIsLoadingData(true);
+        try {
+            // Fetch Products
+            const { data: productsData, error: productsError } = await supabase
+                .from('products')
+                .select('*')
+                .order('id', { ascending: true });
+            
+            if (productsError) throw productsError;
+            setProducts(productsData && productsData.length > 0 ? productsData : INITIAL_PRODUCTS);
+
+            // Fetch Customizations
+            const { data: customizationsData, error: customizationsError } = await supabase
+                .from('customizations')
+                .select('*')
+                .single();
+            
+            if (customizationsError && customizationsError.code !== 'PGRST116') throw customizationsError;
+            if (customizationsData && (customizationsData.flavors?.length || customizationsData.fillings?.length || customizationsData.colors?.length)) {
+                setCustomizationOptions({
+                    flavors: customizationsData.flavors || [],
+                    fillings: customizationsData.fillings || [],
+                    colors: customizationsData.colors || []
+                });
+            } else {
+                setCustomizationOptions(INITIAL_CUSTOMIZATION_OPTIONS);
+            }
+
+            // Fetch Delivery Zones
+            const { data: zonesData, error: zonesError } = await supabase
+                .from('delivery_zones')
+                .select('*')
+                .order('price', { ascending: true });
+            
+            if (zonesError) throw zonesError;
+            setDeliveryZones(zonesData && zonesData.length > 0 ? zonesData : INITIAL_DELIVERY_ZONES);
+
+            // Fetch Logo from configuracion table
+            const { data: configData, error: configError } = await supabase
+                .from('configuracion')
+                .select('logo_url')
+                .eq('id', 1)
+                .single();
+            
+            if (configError && configError.code !== 'PGRST116') {
+                console.warn('Error fetching logo from configuracion:', configError);
+            } else if (configData?.logo_url) {
+                setSiteLogo(configData.logo_url);
+            }
+
+        } catch (error) {
+            console.error('Error fetching data from Supabase:', error);
+            // Fallback to localStorage or initial data
+            const savedProducts = localStorage.getItem('pastelicia_products');
+            setProducts(savedProducts ? JSON.parse(savedProducts) : INITIAL_PRODUCTS);
+            
+            const savedCustomizations = localStorage.getItem('pastelicia_customizations');
+            setCustomizationOptions(savedCustomizations ? JSON.parse(savedCustomizations) : INITIAL_CUSTOMIZATION_OPTIONS);
+            
+            const savedZones = localStorage.getItem('pastelicia_delivery_zones');
+            setDeliveryZones(savedZones ? JSON.parse(savedZones) : INITIAL_DELIVERY_ZONES);
+        } finally {
+            setIsLoadingData(false);
+        }
+    }, []);
+
     // Fetch data from Supabase
     useEffect(() => {
-        const fetchData = async () => {
-            setIsLoadingData(true);
-            try {
-                // Fetch Products
-                const { data: productsData, error: productsError } = await supabase
-                    .from('products')
-                    .select('*')
-                    .order('id', { ascending: true });
-                
-                if (productsError) throw productsError;
-                setProducts(productsData || []);
-
-                // Fetch Customizations
-                const { data: customizationsData, error: customizationsError } = await supabase
-                    .from('customizations')
-                    .select('*')
-                    .single();
-                
-                if (customizationsError && customizationsError.code !== 'PGRST116') throw customizationsError;
-                if (customizationsData && (customizationsData.flavors?.length || customizationsData.fillings?.length || customizationsData.colors?.length)) {
-                    setCustomizationOptions({
-                        flavors: customizationsData.flavors || [],
-                        fillings: customizationsData.fillings || [],
-                        colors: customizationsData.colors || []
-                    });
-                } else {
-                    setCustomizationOptions(INITIAL_CUSTOMIZATION_OPTIONS);
-                }
-
-                // Fetch Delivery Zones
-                const { data: zonesData, error: zonesError } = await supabase
-                    .from('delivery_zones')
-                    .select('*')
-                    .order('price', { ascending: true });
-                
-                if (zonesError) throw zonesError;
-                setDeliveryZones(zonesData && zonesData.length > 0 ? zonesData : INITIAL_DELIVERY_ZONES);
-
-                // Fetch Logo from configuracion table
-                const { data: configData, error: configError } = await supabase
-                    .from('configuracion')
-                    .select('logo_url')
-                    .eq('id', 1)
-                    .single();
-                
-                if (configError && configError.code !== 'PGRST116') {
-                    console.warn('Error fetching logo from configuracion:', configError);
-                } else if (configData?.logo_url) {
-                    setSiteLogo(configData.logo_url);
-                }
-
-            } catch (error) {
-                console.error('Error fetching data from Supabase:', error);
-                // Fallback to localStorage or initial data
-                const savedProducts = localStorage.getItem('pastelicia_products');
-                setProducts(savedProducts ? JSON.parse(savedProducts) : INITIAL_PRODUCTS);
-                
-                const savedCustomizations = localStorage.getItem('pastelicia_customizations');
-                setCustomizationOptions(savedCustomizations ? JSON.parse(savedCustomizations) : INITIAL_CUSTOMIZATION_OPTIONS);
-                
-                const savedZones = localStorage.getItem('pastelicia_delivery_zones');
-                setDeliveryZones(savedZones ? JSON.parse(savedZones) : INITIAL_DELIVERY_ZONES);
-            } finally {
-                setIsLoadingData(false);
-            }
-        };
-
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     // Simple ID generator to ensure uniqueness during the session
     const generateUniqueId = () => {
@@ -124,13 +124,17 @@ const App: React.FC = () => {
     const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
     // Persistence Effects
-
+    useEffect(() => {
+        localStorage.setItem('pastelicia_products', JSON.stringify(products));
+    }, [products]);
 
     useEffect(() => {
         localStorage.setItem('pastelicia_customizations', JSON.stringify(customizationOptions));
     }, [customizationOptions]);
 
-
+    useEffect(() => {
+        localStorage.setItem('pastelicia_delivery_zones', JSON.stringify(deliveryZones));
+    }, [deliveryZones]);
 
     useEffect(() => {
         localStorage.setItem('pastelicia_cart', JSON.stringify(cartItems));
@@ -541,7 +545,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-function fetchData() {
-    throw new Error('Function not implemented.');
-}
