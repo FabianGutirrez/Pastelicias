@@ -19,10 +19,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
-    const ADMIN_REGISTRATION_CODE = '280911'; // Código de acceso para registrar nuevas cuentas administrativas
-
     const getRoleFromEmail = (email: string): UserRole => {
-        const superAdminEmails = ['fabiangcartajena2@gmail.com', 'admin@pastelicia.com'];
+        const superAdminEmails = ['fabiangcartajena@gmail.com', 'admin@pastelicia.com'];
         return superAdminEmails.includes(email.toLowerCase()) ? 'superadmin' : 'admin';
     };
 
@@ -31,18 +29,24 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
         
         const roleToAssign = getRoleFromEmail(email);
 
-        if (isSignUp) {
-            if (secretCode !== ADMIN_REGISTRATION_CODE) {
-                setError('Código de acceso administrativo incorrecto. No tienes permiso para crear esta cuenta.');
-                return;
-            }
-        }
-
         setLoading(true);
         setError('');
 
         try {
             if (isSignUp) {
+                // Validar código contra Supabase (usando nombres en español)
+                const { data: codeData, error: codeError } = await supabase
+                    .from('codigos_registro')
+                    .select('codigo')
+                    .eq('codigo', secretCode)
+                    .single();
+
+                if (codeError || !codeData) {
+                    setError('Código de acceso administrativo incorrecto o expirado.');
+                    setLoading(false);
+                    return;
+                }
+
                 const { data, error } = await supabase.auth.signUp({
                     email,
                     password,
