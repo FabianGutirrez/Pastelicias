@@ -41,7 +41,7 @@ const ContactPage: React.FC = () => {
                             <ContactInfoItem 
                                 icon={<Phone className="w-6 h-6 text-rose-gold" />}
                                 title="Teléfono / WhatsApp"
-                                content={["56954681985"]}
+                                content={["+569 54681985"]}
                             />
                             <ContactInfoItem 
                                 icon={<Mail className="w-6 h-6 text-rose-gold" />}
