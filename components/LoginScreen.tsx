@@ -19,7 +19,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
-    const ADMIN_REGISTRATION_CODE = 'PASTEL-2024-SEC';
+    const ADMIN_REGISTRATION_CODE = '280911'; // Código de acceso para registrar nuevas cuentas administrativas
 
     const getRoleFromEmail = (email: string): UserRole => {
         const superAdminEmails = ['fabiangcartajena2@gmail.com', 'admin@pastelicia.com'];
